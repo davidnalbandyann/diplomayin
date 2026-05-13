@@ -90,6 +90,128 @@ export function generateEdges(vertices, n) {
   return edges
 }
 
+export function reduceRuns(bits) {
+  if (!bits || bits.length === 0) return ''
+  let result = '' + bits[0]
+  for (let i = 1; i < bits.length; i++) {
+    if (bits[i] !== bits[i - 1]) result += bits[i]
+  }
+  return result
+}
+
+export function getRunLengths(bits) {
+  return aggregationVector(bits)
+}
+
+export function getRunCount(bits) {
+  return runCount(bits)
+}
+
+export function getCompressionStats(bits) {
+  const n = bits.length
+  const runLengths = aggregationVector(bits)
+  const k = runCount(bits)
+  return { n, k, runLengths, ratio: k / n, saved: 1 - k / n }
+}
+
+export function isAlternating(str) {
+  if (!str || str.length < 2) return true
+  for (let i = 1; i < str.length; i++) {
+    if (str[i] === str[i - 1]) return false
+  }
+  return true
+}
+
+export function generateCompositions(n, k) {
+  const results = []
+  function helper(remaining, parts, start) {
+    if (parts === 1) {
+      if (remaining >= 1) results.push([...start, remaining])
+      return
+    }
+    for (let i = 1; i <= remaining - (parts - 1); i++) {
+      start.push(i)
+      helper(remaining - i, parts - 1, start)
+      start.pop()
+    }
+  }
+  helper(n, k, [])
+  return results
+}
+
+export function expandByRuns(reducedString, runLengths) {
+  let result = ''
+  for (let i = 0; i < reducedString.length; i++) {
+    result += reducedString[i].repeat(runLengths[i])
+  }
+  return result
+}
+
+export function getPreimagesForReducedString(y, n) {
+  if (!isAlternating(y)) return { k: 0, compositions: [], preimages: [], count: 0, theoretical: 0 }
+  const k = y.length
+  if (k > n || k < 1) return { k, compositions: [], preimages: [], count: 0, theoretical: 0 }
+  const compositions = generateCompositions(n, k)
+  const preimages = compositions.map(comp => expandByRuns(y, comp))
+  const theoretical = binomial(n - 1, k - 1)
+  return {
+    k,
+    compositions,
+    preimages,
+    count: preimages.length,
+    theoretical,
+    match: preimages.length === theoretical,
+  }
+}
+
+export function runValidation() {
+  const results = []
+  // Test 1
+  const bits1 = [1,1,1,0,0,1]
+  const g1 = reduceRuns(bits1)
+  const rl1 = getRunLengths(bits1)
+  const k1 = getRunCount(bits1)
+  const ok1 = g1 === '101' && JSON.stringify(rl1) === '[3,2,1]' && k1 === 3
+  results.push({ test: 'reduceRuns(111001) = 101, runs=[3,2,1], k=3', pass: ok1 })
+
+  // Test 2
+  const pre2 = getPreimagesForReducedString('101', 5)
+  const ok2 = pre2.count === 6 && pre2.theoretical === 6 && pre2.match
+  results.push({ test: 'n=5, y=101 → 6 preimages = C(4,2)', pass: ok2 })
+
+  // Test 3
+  let sum = 0
+  for (let k = 1; k <= 6; k++) sum += theoreticalSize(6, k)
+  results.push({ test: 'n=6, Σ2·C(5,k-1) = 64', pass: sum === 64 })
+
+  // Test 4
+  let allPreimagesOk = true
+  for (const x of pre2.preimages) {
+    const bitsArr = x.split('').map(Number)
+    if (reduceRuns(bitsArr) !== '101') { allPreimagesOk = false; break }
+  }
+  results.push({ test: 'All preimages of "101" reduce back to "101"', pass: allPreimagesOk })
+
+  // Test 5
+  let allDistributionsOk = true
+  for (let n = 3; n <= 9; n++) {
+    const verts = generateVertices(n)
+    const groups = groupByK(verts, n)
+    let total = 0
+    for (let k = 1; k <= n; k++) {
+      const g = groups.get(k)
+      if (g) total += g.actual
+    }
+    if (total !== (1 << n)) { allDistributionsOk = false; break }
+  }
+  results.push({ test: 'n=3..9, distribution totals = 2^n', pass: allDistributionsOk })
+
+  console.table(results)
+  const allPass = results.every(r => r.pass)
+  console.log(allPass ? '✓ All validation tests passed' : '✗ Some tests failed')
+  return allPass
+}
+
 const COLOR_STOPS = [
   { pos: 0, hex: '#3b82f6' },
   { pos: 0.2, hex: '#06b6d4' },

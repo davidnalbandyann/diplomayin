@@ -6,12 +6,13 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { N_MIN, N_MAX } from '../config.js'
-import { generateVertices, generateEdges, groupByK, runCount, colorForK, generateGrayCode } from '../utils/cubeMath.js'
+import { generateVertices, generateEdges, groupByK, runCount, colorForK, generateGrayCode, reduceRuns } from '../utils/cubeMath.js'
 import { forceDirectedLayout, directLayout, shellLayout } from '../utils/layout.js'
 
 export function useHypercube(canvasRef) {
   const n = ref(1)
   const selectedK = ref(null)
+  const selectedBinaryString = ref(null)
   const groups = shallowRef(new Map())
   const isTransitioning = ref(false)
   const layoutMode = ref('standard')
@@ -125,9 +126,16 @@ export function useHypercube(canvasRef) {
   function onPointerDown(event) {
     const vm = getIntersectedVertex(event)
     if (vm) {
-      selectedK.value = vm.k === selectedK.value ? null : vm.k
-      if (selectedK.value !== null) updateHighlight(selectedK.value)
-      else clearHighlight()
+      const v = vertices[vm.vIdx]
+      if (selectedK.value === vm.k && selectedBinaryString.value === v.label) {
+        selectedK.value = null
+        selectedBinaryString.value = null
+        clearHighlight()
+      } else {
+        selectedK.value = vm.k
+        selectedBinaryString.value = v.label
+        updateHighlight(vm.k)
+      }
     }
   }
 
@@ -504,6 +512,7 @@ export function useHypercube(canvasRef) {
       clearScene()
     }
     selectedK.value = null
+    selectedBinaryString.value = null
     hoveredVertex.value = null
     buildScene()
     fadeIn()
@@ -524,9 +533,27 @@ export function useHypercube(canvasRef) {
     else updateHighlight(val)
   })
 
+  watch(selectedBinaryString, (val) => {
+    if (val === null) {
+      selectedK.value = null
+    }
+  })
+
   function setN(val) { n.value = Math.max(N_MIN, Math.min(N_MAX, val)) }
   function setSelectedK(val) { selectedK.value = val }
-  function clearSelection() { selectedK.value = null }
+  function setSelectedBinaryString(val) {
+    selectedBinaryString.value = val
+    if (val !== null) {
+      const bits = val.split('').map(Number)
+      selectedK.value = runCount(bits)
+    } else {
+      selectedK.value = null
+    }
+  }
+  function clearSelection() {
+    selectedK.value = null
+    selectedBinaryString.value = null
+  }
   function toggleAutoRotate() {
     autoRotate.value = !autoRotate.value
     controls.autoRotate = autoRotate.value
@@ -551,5 +578,5 @@ export function useHypercube(canvasRef) {
     }
   })
 
-  return { n, selectedK, groups, isTransitioning, layoutMode, showPath, hoveredVertex, setN, setSelectedK, clearSelection, toggleAutoRotate, setLayoutMode, togglePath, autoRotate, vertices }
+  return { n, selectedK, selectedBinaryString, groups, isTransitioning, layoutMode, showPath, hoveredVertex, setN, setSelectedK, setSelectedBinaryString, clearSelection, toggleAutoRotate, setLayoutMode, togglePath, autoRotate, vertices }
 }
