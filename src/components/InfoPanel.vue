@@ -1,7 +1,6 @@
 <script setup>
 import { inject, computed } from 'vue'
 import { colorForK } from '../utils/cubeMath.js'
-import PartitionCheck from './PartitionCheck.vue'
 
 const hc = inject('hypercube')
 
@@ -168,10 +167,6 @@ function runBreakdown(vertex) {
 
     <div class="px-4 py-2.5 border-t border-white/5 text-[10px] text-slate-500 text-center font-math">
       |H(k, n)| = 2 &middot; C(n &minus; 1, k &minus; 1)
-    </div>
-
-    <div class="px-3 py-3 border-t border-white/5">
-      <PartitionCheck />
     </div>
   </div>
 </template>

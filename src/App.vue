@@ -1,121 +1,128 @@
 <script setup>
 import { ref, provide } from 'vue'
-import { useHypercube } from './composables/useHypercube.js'
-import HypercubeScene from './components/HypercubeScene.vue'
-import InfoPanel from './components/InfoPanel.vue'
-import VertexHUD from './components/VertexHUD.vue'
-import RleDemoPanel from './components/RleDemoPanel.vue'
-import PreimageExplorer from './components/PreimageExplorer.vue'
-import SimulationPanel from './components/SimulationPanel.vue'
-import PartitionCheck from './components/PartitionCheck.vue'
+import { N_MIN, N_MAX } from './config.js'
+import { useAppState } from './composables/useAppState.js'
+import ClassesWorkspace from './components/ClassesWorkspace.vue'
+import RleWorkspace from './components/RleWorkspace.vue'
+import PreimageWorkspace from './components/PreimageWorkspace.vue'
+import StarsBarsWorkspace from './components/StarsBarsWorkspace.vue'
+import DistributionWorkspace from './components/DistributionWorkspace.vue'
+import SimulationWorkspace from './components/SimulationWorkspace.vue'
+import ProofsWorkspace from './components/ProofsWorkspace.vue'
 
-const canvasRef = ref(null)
-const hc = useHypercube(canvasRef)
-provide('hypercube', hc)
-provide('canvasRef', canvasRef)
+const appState = useAppState()
+provide('appState', appState)
 
-const showInfoPanel = ref(false)
-function toggleInfoPanel() { showInfoPanel.value = !showInfoPanel.value }
+const showMobileMenu = ref(false)
 
 const tabs = [
   { id: 'classes', label: 'Classes' },
   { id: 'rle', label: 'RLE' },
   { id: 'preimages', label: 'Preimages' },
+  { id: 'starsbars', label: 'Stars & Bars' },
+  { id: 'distribution', label: 'Distribution' },
   { id: 'simulation', label: 'Simulation' },
-  { id: 'proof', label: 'Proof' },
+  { id: 'proofs', label: 'Proofs' },
 ]
-const currentTab = ref('classes')
+
+const workspaceComponents = {
+  classes: ClassesWorkspace,
+  rle: RleWorkspace,
+  preimages: PreimageWorkspace,
+  starsbars: StarsBarsWorkspace,
+  distribution: DistributionWorkspace,
+  simulation: SimulationWorkspace,
+  proofs: ProofsWorkspace,
+}
 </script>
 
 <template>
   <div class="h-screen w-screen bg-slate-950 text-white overflow-hidden flex flex-col">
-    <div class="h-8 shrink-0 flex items-center px-3 md:px-4 border-b border-white/5">
-      <button
-        class="md:hidden mr-2 text-slate-400 hover:text-white transition-colors p-0.5"
-        @click="toggleInfoPanel"
-        aria-label="Toggle info panel"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-          <path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-        </svg>
-      </button>
-      <span class="text-[11px] font-medium text-slate-400 tracking-wide">
-        Hypercube Visualizer
-      </span>
-    </div>
-    <div class="flex-1 flex overflow-hidden p-2 gap-2">
-      <div class="flex-1 min-w-0">
-        <HypercubeScene />
-      </div>
-      <div class="hidden md:flex w-72 shrink-0 flex-col glass-panel-strong rounded-xl overflow-hidden">
-        <div class="flex border-b border-white/5 shrink-0 overflow-x-auto">
-          <button
-            v-for="tab in tabs"
-            :key="tab.id"
-            @click="currentTab = tab.id"
-            :class="[
-              'flex-1 text-[10px] py-2 font-medium transition-colors relative',
-              currentTab === tab.id
-                ? 'text-blue-300'
-                : 'text-slate-500 hover:text-slate-300',
-            ]"
-          >
-            {{ tab.label }}
-            <div
-              v-if="currentTab === tab.id"
-              class="absolute bottom-0 left-2 right-2 h-0.5 bg-blue-500/60 rounded-full"
-            ></div>
-          </button>
+    <header class="shrink-0 border-b border-white/5">
+      <div class="h-9 flex items-center px-3 md:px-4 gap-3">
+        <button
+          class="md:hidden mr-1 text-slate-400 hover:text-white transition-colors p-0.5"
+          @click="showMobileMenu = !showMobileMenu"
+          aria-label="Toggle mobile menu"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+            <path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <span class="text-[11px] font-medium text-slate-400 tracking-wide hidden sm:inline">Hypercube Visualizer</span>
+        <div class="flex items-center gap-2 ml-auto md:ml-0">
+          <span class="text-[11px] text-slate-500">n =</span>
+          <span class="text-sm font-bold text-blue-400 tabular-nums min-w-[2ch] text-center">{{ appState.dimension }}</span>
+          <input
+            type="range"
+            :min="N_MIN"
+            :max="N_MAX"
+            :value="appState.dimension"
+            @input="appState.setDimension(parseInt($event.target.value))"
+            class="w-16 sm:w-20 cursor-pointer"
+          />
         </div>
-        <div class="flex-1 overflow-y-auto px-3 py-3">
-          <InfoPanel v-if="currentTab === 'classes'" />
-          <RleDemoPanel v-else-if="currentTab === 'rle'" />
-          <PreimageExplorer v-else-if="currentTab === 'preimages'" />
-          <SimulationPanel v-else-if="currentTab === 'simulation'" />
-          <PartitionCheck v-else-if="currentTab === 'proof'" />
+        <div v-if="appState.selectedBinaryString" class="hidden md:flex items-center gap-2 ml-2 text-[10px]">
+          <span class="text-slate-600">|</span>
+          <span class="text-slate-500">x:</span>
+          <span class="font-mono text-slate-300">{{ appState.selectedBinaryString }}</span>
+          <span v-if="appState.selectedReducedString" class="text-slate-500">y:</span>
+          <span v-if="appState.selectedReducedString" class="font-mono text-emerald-300">{{ appState.selectedReducedString }}</span>
         </div>
       </div>
-    </div>
+      <nav class="flex overflow-x-auto border-t border-white/5 bg-slate-900/50">
+        <button
+          v-for="tab in tabs"
+          :key="tab.id"
+          @click="appState.setActiveTab(tab.id)"
+          :class="[
+            'text-[10px] sm:text-[11px] px-3 sm:px-4 py-2 font-medium transition-colors relative shrink-0 whitespace-nowrap',
+            appState.activeTab === tab.id
+              ? 'text-blue-300'
+              : 'text-slate-500 hover:text-slate-300',
+          ]"
+        >
+          {{ tab.label }}
+          <div
+            v-if="appState.activeTab === tab.id"
+            class="absolute bottom-0 left-2 right-2 h-0.5 bg-blue-500/60 rounded-full"
+          ></div>
+        </button>
+      </nav>
+    </header>
+
+    <main class="flex-1 overflow-hidden p-2">
+      <ClassesWorkspace v-if="appState.activeTab === 'classes'" />
+      <RleWorkspace v-else-if="appState.activeTab === 'rle'" />
+      <PreimageWorkspace v-else-if="appState.activeTab === 'preimages'" />
+      <StarsBarsWorkspace v-else-if="appState.activeTab === 'starsbars'" />
+      <DistributionWorkspace v-else-if="appState.activeTab === 'distribution'" />
+      <SimulationWorkspace v-else-if="appState.activeTab === 'simulation'" />
+      <ProofsWorkspace v-else-if="appState.activeTab === 'proofs'" />
+    </main>
 
     <Teleport to="body">
-      <div v-if="showInfoPanel" class="fixed inset-0 z-50 md:hidden">
-        <div class="absolute inset-0 bg-black/50" @click="showInfoPanel = false"></div>
-        <div class="absolute inset-y-0 right-0 w-[85vw] max-w-sm">
-          <div class="h-full flex flex-col glass-panel-strong rounded-l-xl overflow-hidden">
-            <div class="flex border-b border-white/5 shrink-0 overflow-x-auto">
-              <button
-                v-for="tab in tabs"
-                :key="tab.id"
-                @click="currentTab = tab.id"
-                :class="[
-                  'flex-1 text-[10px] py-2 font-medium transition-colors relative',
-                  currentTab === tab.id
-                    ? 'text-blue-300'
-                    : 'text-slate-500 hover:text-slate-300',
-                ]"
-              >
-                {{ tab.label }}
-                <div
-                  v-if="currentTab === tab.id"
-                  class="absolute bottom-0 left-2 right-2 h-0.5 bg-blue-500/60 rounded-full"
-                ></div>
-              </button>
-            </div>
+      <div v-if="showMobileMenu" class="fixed inset-0 z-50 md:hidden">
+        <div class="absolute inset-0 bg-black/50" @click="showMobileMenu = false"></div>
+        <div class="absolute inset-y-0 right-0 w-[75vw] max-w-xs glass-panel-strong overflow-y-auto">
+          <div class="p-4 space-y-1">
+            <div class="text-xs text-slate-500 font-medium mb-3">Tabs</div>
             <button
-              @click="showInfoPanel = false"
-              class="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full bg-slate-800/80 text-slate-400 hover:text-white text-xs border border-white/10 transition-colors"
-            >✕</button>
-            <div class="flex-1 overflow-y-auto px-3 py-3">
-              <InfoPanel v-if="currentTab === 'classes'" />
-              <RleDemoPanel v-else-if="currentTab === 'rle'" />
-              <PreimageExplorer v-else-if="currentTab === 'preimages'" />
-              <SimulationPanel v-else-if="currentTab === 'simulation'" />
-              <PartitionCheck v-else-if="currentTab === 'proof'" />
-            </div>
+              v-for="tab in tabs"
+              :key="tab.id"
+              @click="appState.setActiveTab(tab.id); showMobileMenu = false"
+              :class="[
+                'block w-full text-left text-sm px-3 py-2 rounded-lg transition-colors',
+                appState.activeTab === tab.id
+                  ? 'bg-blue-500/20 text-blue-300'
+                  : 'text-slate-400 hover:bg-white/5',
+              ]"
+            >
+              {{ tab.label }}
+            </button>
           </div>
         </div>
       </div>
     </Teleport>
-    <VertexHUD />
   </div>
 </template>

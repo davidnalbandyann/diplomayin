@@ -1,27 +1,22 @@
 <script setup>
 import { inject, ref, computed, watch } from 'vue'
-import { reduceRuns, isAlternating, getPreimagesForReducedString } from '../utils/cubeMath.js'
-import { binomial } from '../utils/cubeMath.js'
-import StarsBarsVisualizer from './StarsBarsVisualizer.vue'
+import { reduceRuns, isAlternating, getPreimagesForReducedString, binomial } from '../utils/cubeMath.js'
 import KaTeXFormula from './KaTeXFormula.vue'
 
 const hc = inject('hypercube')
 
 const inputY = ref('')
-const currentCompIdx = ref(0)
 
 watch(() => hc.selectedBinaryString.value, (val) => {
   if (val !== null) {
     const bits = val.split('').map(Number)
     inputY.value = reduceRuns(bits)
-    currentCompIdx.value = 0
   }
 })
 
 function sanitizeY(e) {
   const val = e.target.value.replace(/[^01]/g, '')
   inputY.value = val
-  currentCompIdx.value = 0
 }
 
 const preimageData = computed(() => {
@@ -34,21 +29,6 @@ const yValid = computed(() => {
   if (!inputY.value) return true
   return isAlternating(inputY.value)
 })
-
-const currentComposition = computed(() => {
-  if (!preimageData.value || preimageData.value.compositions.length === 0) return null
-  return preimageData.value.compositions[currentCompIdx.value]
-})
-
-function prevComp() {
-  if (currentCompIdx.value > 0) currentCompIdx.value--
-}
-
-function nextComp() {
-  if (preimageData.value && currentCompIdx.value < preimageData.value.compositions.length - 1) {
-    currentCompIdx.value++
-  }
-}
 
 function highlightPreimage(label) {
   hc.setSelectedBinaryString(label)
@@ -97,17 +77,6 @@ function highlightPreimage(label) {
           {{ preimageData.match ? 'match' : 'mismatch' }}
         </span>
       </div>
-
-      <StarsBarsVisualizer
-        :n="hc.n.value"
-        :k="preimageData.k"
-        :composition="currentComposition"
-        :currentIndex="currentCompIdx"
-        :total="preimageData.compositions.length"
-        :reducedString="inputY"
-        @prev="prevComp"
-        @next="nextComp"
-      />
 
       <div class="text-xs text-slate-400 font-medium mt-2">Preimages</div>
       <div class="max-h-36 overflow-y-auto space-y-0.5">
