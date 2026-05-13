@@ -50,6 +50,30 @@ export function groupByK(vertices, n) {
   return map
 }
 
+export function aggregationVector(bits) {
+  if (!bits.length) return []
+  const result = []
+  let count = 1
+  for (let i = 1; i < bits.length; i++) {
+    if (bits[i] === bits[i - 1]) {
+      count++
+    } else {
+      result.push(count)
+      count = 1
+    }
+  }
+  result.push(count)
+  return result
+}
+
+export function generateGrayCode(n) {
+  if (n === 0) return [0]
+  const prev = generateGrayCode(n - 1)
+  const reflected = [...prev].reverse()
+  const leadingBit = 1 << (n - 1)
+  return [...prev, ...reflected.map(v => v | leadingBit)]
+}
+
 export function generateEdges(vertices, n) {
   const edges = []
   const len = vertices.length

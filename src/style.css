@@ -79,3 +79,14 @@ input[type='range']:focus {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.4);
 }
+
+.slide-enter-active, .slide-leave-active {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.slide-enter-from { transform: translateX(100%); opacity: 0; }
+.slide-leave-to { transform: translateX(100%); opacity: 0; }
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from, .fade-leave-to { opacity: 0; }

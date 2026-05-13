@@ -5,14 +5,18 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
-import { generateVertices, generateEdges, groupByK, runCount, colorForK } from '../utils/cubeMath.js'
-import { forceDirectedLayout, directLayout } from '../utils/layout.js'
+import { N_MIN, N_MAX } from '../config.js'
+import { generateVertices, generateEdges, groupByK, runCount, colorForK, generateGrayCode } from '../utils/cubeMath.js'
+import { forceDirectedLayout, directLayout, shellLayout } from '../utils/layout.js'
 
 export function useHypercube(canvasRef) {
   const n = ref(1)
   const selectedK = ref(null)
   const groups = shallowRef(new Map())
   const isTransitioning = ref(false)
+  const layoutMode = ref('standard')
+  const showPath = ref(false)
+  const hoveredVertex = ref(null)
 
   let scene, camera, renderer, composer, controls, labelRenderer
   let vertices = []
@@ -25,6 +29,10 @@ export function useHypercube(canvasRef) {
   let animFrameId = null
   const autoRotate = ref(true)
   let tickCount = 0
+  let pathMesh = null
+  let pathAnimator = null
+  let targetCamPos = null
+  let targetCamLook = null
 
   function initScene() {
     const canvas = canvasRef.value
@@ -84,6 +92,7 @@ export function useHypercube(canvasRef) {
     pointer = new THREE.Vector2()
 
     renderer.domElement.addEventListener('pointerdown', onPointerDown)
+    renderer.domElement.addEventListener('pointermove', onPointerMove)
     window.addEventListener('resize', onResize)
   }
 
@@ -99,39 +108,63 @@ export function useHypercube(canvasRef) {
     labelRenderer.setSize(w, h)
   }
 
-  function onPointerDown(event) {
+  function getIntersectedVertex(event) {
     const rect = renderer.domElement.getBoundingClientRect()
     pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
     pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
     raycaster.setFromCamera(pointer, camera)
     const meshes = vertexMeshes.map(vm => vm.mesh)
     const intersects = raycaster.intersectObjects(meshes)
-
     if (intersects.length > 0) {
       const hitIdx = meshes.indexOf(intersects[0].object)
-      if (hitIdx !== -1) {
-        const vm = vertexMeshes[hitIdx]
-        selectedK.value = vm.k === selectedK.value ? null : vm.k
-        if (selectedK.value !== null) {
-          updateHighlight(selectedK.value)
-        }
-      }
+      if (hitIdx !== -1) return vertexMeshes[hitIdx]
     }
+    return null
+  }
+
+  function onPointerDown(event) {
+    const vm = getIntersectedVertex(event)
+    if (vm) {
+      selectedK.value = vm.k === selectedK.value ? null : vm.k
+      if (selectedK.value !== null) updateHighlight(selectedK.value)
+      else clearHighlight()
+    }
+  }
+
+  function onPointerMove(event) {
+    const vm = getIntersectedVertex(event)
+    if (vm) {
+      const v = vertices[vm.vIdx]
+      hoveredVertex.value = { label: v.label, bits: v.bits, k: vm.k, id: v.id }
+    } else {
+      hoveredVertex.value = null
+    }
+    document.body.style.cursor = vm ? 'pointer' : ''
   }
 
   function updateHighlight(k) {
     for (const vm of vertexMeshes) {
       const on = vm.k === k
-      vm.targetScale = on ? 1.6 : 0.8
-      vm.targetOpacity = on ? 1.0 : 0.2
-      vm.mesh.material.emissiveIntensity = on ? 0.6 : 0.0
+      vm.targetScale = on ? 1.8 : 0.4
+      vm.targetOpacity = on ? 1.0 : 0.08
+      vm.mesh.material.emissiveIntensity = on ? 0.8 : 0.0
+      if (!on) {
+        vm.mesh.material.color.setHex(0x334155)
+      } else {
+        vm.mesh.material.color.copy(vm.origColor)
+      }
     }
     for (const em of edgeMeshes) {
-      em.targetOpacity = em.k1 === k || em.k2 === k ? 0.8 : 0.06
+      const on = em.k1 === k || em.k2 === k
+      em.targetOpacity = on ? 0.9 : 0.005
+      if (!on) {
+        em.mesh.material.color.setHex(0x1e293b)
+      } else {
+        em.mesh.material.color.setHex(0x94a3b8)
+      }
     }
     for (const l of labelElements) {
-      l.element.style.opacity = l.__k === k ? '1' : '0.3'
+      l.element.style.opacity = l.__k === k ? '1' : '0.15'
     }
   }
 
@@ -140,9 +173,11 @@ export function useHypercube(canvasRef) {
       vm.targetScale = 1.0
       vm.targetOpacity = 1.0
       vm.mesh.material.emissiveIntensity = 0.0
+      vm.mesh.material.color.copy(vm.origColor)
     }
     for (const em of edgeMeshes) {
       em.targetOpacity = 0.35
+      em.mesh.material.color.setHex(0x64748b)
     }
     for (const l of labelElements) {
       l.element.style.opacity = '1'
@@ -176,6 +211,51 @@ export function useHypercube(canvasRef) {
     mesh.geometry = newGeom
   }
 
+  function buildPathOverlay() {
+    if (pathMesh) {
+      scene.remove(pathMesh)
+      pathMesh.geometry.dispose()
+      pathMesh.material.dispose()
+      pathMesh = null
+    }
+    if (pathAnimator) {
+      scene.remove(pathAnimator)
+      pathAnimator.geometry.dispose()
+      pathAnimator.material.dispose()
+      pathAnimator = null
+    }
+    if (!showPath.value) return
+
+    const ids = generateGrayCode(n.value)
+    const pos = getCurrentPositions()
+    const points = ids.map(id => new THREE.Vector3(pos[id * 3], pos[id * 3 + 1], pos[id * 3 + 2]))
+
+    const curve = new THREE.CatmullRomCurve3(points)
+    const tubeGeom = new THREE.TubeGeometry(curve, points.length * 4, 0.015, 4, false)
+    const tubeMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.6 })
+    pathMesh = new THREE.Mesh(tubeGeom, tubeMat)
+    scene.add(pathMesh)
+
+    const animGeom = new THREE.SphereGeometry(0.08, 12, 12)
+    const animMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 })
+    pathAnimator = new THREE.Mesh(animGeom, animMat)
+    scene.add(pathAnimator)
+  }
+
+  function getCurrentPositions() {
+    if (layoutState && layoutState.positions) {
+      return layoutState.positions
+    }
+    const pos = new Float32Array(vertices.length * 3)
+    for (let i = 0; i < vertexMeshes.length; i++) {
+      const p = vertexMeshes[i].mesh.position
+      pos[i * 3] = p.x
+      pos[i * 3 + 1] = p.y
+      pos[i * 3 + 2] = p.z
+    }
+    return pos
+  }
+
   function buildScene() {
     const currentN = n.value
     vertices = generateVertices(currentN)
@@ -183,12 +263,16 @@ export function useHypercube(canvasRef) {
     const groupsMap = groupByK(vertices, currentN)
     groups.value = groupsMap
 
-    const vertexPositions = currentN <= 3 ? directLayout(vertices, currentN) : null
-    layoutState = forceDirectedLayout(vertices, edges, currentN, vertexPositions)
-
-    if (currentN > 3) {
-      for (let iter = 0; iter < 200; iter++) {
-        layoutState.tick()
+    if (layoutMode.value === 'shell') {
+      const pos = shellLayout(vertices, currentN)
+      layoutState = { positions: pos, tick: () => 0 }
+    } else {
+      const vertexPositions = currentN <= 3 ? directLayout(vertices, currentN) : null
+      layoutState = forceDirectedLayout(vertices, edges, currentN, vertexPositions)
+      if (currentN > 3) {
+        for (let iter = 0; iter < 200; iter++) {
+          layoutState.tick()
+        }
       }
     }
 
@@ -214,7 +298,7 @@ export function useHypercube(canvasRef) {
       mesh.position.set(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2])
       scene.add(mesh)
 
-      vertexMeshes.push({ mesh, k, targetScale: 1.0, targetOpacity: 1.0, vIdx: i })
+      vertexMeshes.push({ mesh, k, targetScale: 1.0, targetOpacity: 1.0, vIdx: i, origColor: color.clone() })
 
       const div = document.createElement('div')
       div.textContent = v.label
@@ -254,7 +338,7 @@ export function useHypercube(canvasRef) {
       const cp2 = new THREE.Vector3().copy(mid).add(right.clone().multiplyScalar(-bend))
       cp2.add(trueUp.clone().multiplyScalar(bend * (Math.random() - 0.5)))
 
-      const curve = new THREE.CubicBezierCurve3(p1, cp1, p2, cp2)
+      const curve = new THREE.CubicBezierCurve3(p1, cp1, cp2, p2)
       const tubeGeom = new THREE.TubeGeometry(curve, 8, 0.02, 6, false)
       const tubeMat = new THREE.MeshBasicMaterial({
         color: 0x64748b,
@@ -266,14 +350,24 @@ export function useHypercube(canvasRef) {
 
       edgeMeshes.push({ mesh: tube, k1: runCount(vertices[a].bits), k2: runCount(vertices[b].bits), aIdx: a, bIdx: b, targetOpacity: 0.35 })
     }
+
+    buildPathOverlay()
+    updateCameraForN(currentN)
   }
+
+  function updateCameraForN(currentN) {
+    const dist = 3 + currentN * 0.8
+    targetCamPos = new THREE.Vector3(dist * 0.6, dist * 0.4, dist)
+    targetCamLook = new THREE.Vector3(0, 0, 0)
+  }
+
+  let pathAnimTime = 0
 
   function tick() {
     if (!composer) return
-
     tickCount++
 
-    if (layoutState && n.value > 3) {
+    if (layoutState && n.value > 3 && layoutMode.value === 'standard') {
       layoutState.tick()
       const pos = layoutState.positions
       for (let i = 0; i < vertexMeshes.length; i++) {
@@ -289,6 +383,7 @@ export function useHypercube(canvasRef) {
         for (const em of edgeMeshes) {
           rebuildEdgeTube(em.aIdx, em.bIdx, em.mesh)
         }
+        if (showPath.value) buildPathOverlay()
       }
     }
 
@@ -305,6 +400,21 @@ export function useHypercube(canvasRef) {
 
     for (const em of edgeMeshes) {
       em.mesh.material.opacity += (em.targetOpacity - em.mesh.material.opacity) * 0.08
+    }
+
+    if (targetCamPos && targetCamLook) {
+      camera.position.lerp(targetCamPos, 0.02)
+    }
+
+    if (showPath.value && pathAnimator) {
+      pathAnimTime += 0.005
+      const ids = generateGrayCode(n.value)
+      const pos = getCurrentPositions()
+      const points = ids.map(id => new THREE.Vector3(pos[id * 3], pos[id * 3 + 1], pos[id * 3 + 2]))
+      const curve = new THREE.CatmullRomCurve3(points)
+      const t = (Math.sin(pathAnimTime * Math.PI * 2) + 1) / 2
+      const p = curve.getPoint(t)
+      pathAnimator.position.copy(p)
     }
 
     controls.update()
@@ -353,6 +463,18 @@ export function useHypercube(canvasRef) {
   }
 
   function clearScene() {
+    if (pathMesh) {
+      scene.remove(pathMesh)
+      pathMesh.geometry.dispose()
+      pathMesh.material.dispose()
+      pathMesh = null
+    }
+    if (pathAnimator) {
+      scene.remove(pathAnimator)
+      pathAnimator.geometry.dispose()
+      pathAnimator.material.dispose()
+      pathAnimator = null
+    }
     for (const vm of vertexMeshes) {
       scene.remove(vm.mesh)
       vm.mesh.geometry.dispose()
@@ -382,24 +504,35 @@ export function useHypercube(canvasRef) {
       clearScene()
     }
     selectedK.value = null
+    hoveredVertex.value = null
     buildScene()
     fadeIn()
   }
 
   watch(n, () => { rebuildScene() })
 
+  watch(layoutMode, () => { rebuildScene() })
+
+  watch(showPath, () => {
+    if (vertexMeshes.length > 0) {
+      buildPathOverlay()
+    }
+  })
+
   watch(selectedK, (val) => {
     if (val === null) clearHighlight()
     else updateHighlight(val)
   })
 
-  function setN(val) { n.value = Math.max(1, Math.min(6, val)) }
+  function setN(val) { n.value = Math.max(N_MIN, Math.min(N_MAX, val)) }
   function setSelectedK(val) { selectedK.value = val }
   function clearSelection() { selectedK.value = null }
   function toggleAutoRotate() {
     autoRotate.value = !autoRotate.value
     controls.autoRotate = autoRotate.value
   }
+  function setLayoutMode(mode) { layoutMode.value = mode }
+  function togglePath() { showPath.value = !showPath.value }
 
   onMounted(() => {
     initScene()
@@ -412,10 +545,11 @@ export function useHypercube(canvasRef) {
     if (animFrameId) cancelAnimationFrame(animFrameId)
     if (renderer) {
       renderer.domElement.removeEventListener('pointerdown', onPointerDown)
+      renderer.domElement.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('resize', onResize)
       renderer.dispose()
     }
   })
 
-  return { n, selectedK, groups, isTransitioning, setN, setSelectedK, clearSelection, toggleAutoRotate, autoRotate }
+  return { n, selectedK, groups, isTransitioning, layoutMode, showPath, hoveredVertex, setN, setSelectedK, clearSelection, toggleAutoRotate, setLayoutMode, togglePath, autoRotate, vertices }
 }

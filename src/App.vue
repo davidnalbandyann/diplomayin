@@ -3,6 +3,7 @@ import { ref, provide } from 'vue'
 import { useHypercube } from './composables/useHypercube.js'
 import HypercubeScene from './components/HypercubeScene.vue'
 import InfoPanel from './components/InfoPanel.vue'
+import VertexHUD from './components/VertexHUD.vue'
 
 const canvasRef = ref(null)
 const hc = useHypercube(canvasRef)
@@ -52,5 +53,6 @@ function toggleInfoPanel() { showInfoPanel.value = !showInfoPanel.value }
         </div>
       </div>
     </Teleport>
+    <VertexHUD />
   </div>
 </template>

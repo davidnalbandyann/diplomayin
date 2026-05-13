@@ -76,6 +76,39 @@ export function forceDirectedLayout(vertices, edges, n, startCoords) {
   return { positions, velocities, tick }
 }
 
+export function shellLayout(vertices, n) {
+  const count = vertices.length
+  const positions = new Float32Array(count * 3)
+  const vertexK = vertices.map(v => runCountInternal(v.bits))
+  const maxK = Math.max(...vertexK)
+
+  for (let i = 0; i < count; i++) {
+    const k = vertexK[i]
+    const radius = maxK > 1 ? ((k - 1) / (maxK - 1)) * 3.5 + 0.5 : 0
+    const y = maxK > 1 ? ((k - 1) / (maxK - 1)) * 3 - 1.5 : 0
+
+    const sameK = vertices.filter((_, j) => vertexK[j] === k)
+    const idxInRing = sameK.indexOf(vertices[i])
+    const totalInRing = sameK.length
+    const angle = (idxInRing / totalInRing) * Math.PI * 2
+
+    positions[i * 3] = radius * Math.cos(angle)
+    positions[i * 3 + 1] = y
+    positions[i * 3 + 2] = radius * Math.sin(angle)
+  }
+
+  return positions
+}
+
+function runCountInternal(bits) {
+  if (!bits.length) return 0
+  let runs = 1
+  for (let i = 1; i < bits.length; i++) {
+    if (bits[i] !== bits[i - 1]) runs++
+  }
+  return runs
+}
+
 export function directLayout(vertices, n) {
   const count = vertices.length
   const positions = new Float32Array(count * 3)
