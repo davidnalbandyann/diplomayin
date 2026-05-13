@@ -52,7 +52,14 @@ const workspaceComponents = {
         <span class="text-[11px] font-medium text-slate-400 tracking-wide hidden sm:inline">Hypercube Visualizer</span>
         <div class="flex items-center gap-2 ml-auto md:ml-0">
           <span class="text-[11px] text-slate-500">n =</span>
-          <span class="text-sm font-bold text-blue-400 tabular-nums min-w-[2ch] text-center">{{ appState.dimension }}</span>
+          <input
+            type="number"
+            :min="N_MIN"
+            :max="N_MAX"
+            :value="appState.dimension"
+            @input="appState.setDimension(parseInt($event.target.value) || N_MIN)"
+            class="w-8 sm:w-10 bg-transparent text-sm font-bold text-blue-400 tabular-nums text-center border-b border-blue-500/30 focus:outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
           <input
             type="range"
             :min="N_MIN"

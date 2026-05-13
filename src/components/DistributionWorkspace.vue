@@ -37,7 +37,7 @@ const maxTotal = computed(() => Math.max(...entries.value.map(e => e.total), 1))
     </div>
 
     <div class="bg-white/[0.03] rounded-xl p-4 space-y-2">
-      <div class="flex items-end gap-1.5 h-28">
+      <div class="flex items-stretch gap-1.5 h-28">
         <div
           v-for="e in entries"
           :key="e.k"

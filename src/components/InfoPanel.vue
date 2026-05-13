@@ -64,7 +64,7 @@ function runBreakdown(vertex) {
     </div>
 
     <div class="px-4 pt-3 pb-2 border-b border-white/5">
-      <div class="flex items-end gap-1.5 h-20">
+      <div class="flex items-stretch gap-1.5 h-20">
         <div
           v-for="entry in entries"
           :key="'bar-' + entry.k"

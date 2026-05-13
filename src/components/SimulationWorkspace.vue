@@ -153,7 +153,7 @@ const maxExpPct = computed(() => Math.max(...tableEntries.value.map(e => e.expPc
       </div>
 
       <div class="bg-white/[0.03] rounded-xl p-4 space-y-2">
-        <div class="flex items-end gap-1.5 h-24">
+        <div class="flex items-stretch gap-1.5 h-24">
           <div
             v-for="e in tableEntries"
             :key="e.k"
