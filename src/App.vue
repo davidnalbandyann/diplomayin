@@ -9,6 +9,7 @@ import StarsBarsWorkspace from './components/StarsBarsWorkspace.vue'
 import DistributionWorkspace from './components/DistributionWorkspace.vue'
 import SimulationWorkspace from './components/SimulationWorkspace.vue'
 import ProofsWorkspace from './components/ProofsWorkspace.vue'
+import ThesisWorkspace from './components/ThesisWorkspace.vue'
 
 const appState = useAppState()
 provide('appState', appState)
@@ -23,6 +24,7 @@ const tabs = [
   { id: 'distribution', label: 'Distribution' },
   { id: 'simulation', label: 'Simulation' },
   { id: 'proofs', label: 'Proofs' },
+  { id: 'thesis', label: 'Thesis' },
 ]
 
 const workspaceComponents = {
@@ -33,6 +35,7 @@ const workspaceComponents = {
   distribution: DistributionWorkspace,
   simulation: SimulationWorkspace,
   proofs: ProofsWorkspace,
+  thesis: ThesisWorkspace,
 }
 </script>
 
@@ -106,6 +109,7 @@ const workspaceComponents = {
       <DistributionWorkspace v-else-if="appState.activeTab === 'distribution'" />
       <SimulationWorkspace v-else-if="appState.activeTab === 'simulation'" />
       <ProofsWorkspace v-else-if="appState.activeTab === 'proofs'" />
+      <ThesisWorkspace v-else-if="appState.activeTab === 'thesis'" />
     </main>
 
     <Teleport to="body">
