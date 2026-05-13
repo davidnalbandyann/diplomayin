@@ -8,11 +8,23 @@ const canvasRef = ref(null)
 const hc = useHypercube(canvasRef)
 provide('hypercube', hc)
 provide('canvasRef', canvasRef)
+
+const showInfoPanel = ref(false)
+function toggleInfoPanel() { showInfoPanel.value = !showInfoPanel.value }
 </script>
 
 <template>
   <div class="h-screen w-screen bg-slate-950 text-white overflow-hidden flex flex-col">
-    <div class="h-8 shrink-0 flex items-center px-4 border-b border-white/5">
+    <div class="h-8 shrink-0 flex items-center px-3 md:px-4 border-b border-white/5">
+      <button
+        class="md:hidden mr-2 text-slate-400 hover:text-white transition-colors p-0.5"
+        @click="toggleInfoPanel"
+        aria-label="Toggle info panel"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+          <path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+        </svg>
+      </button>
       <span class="text-[11px] font-medium text-slate-400 tracking-wide">
         n-Dimensional Hypercube Visualizer
       </span>
@@ -21,9 +33,24 @@ provide('canvasRef', canvasRef)
       <div class="flex-1 min-w-0">
         <HypercubeScene />
       </div>
-      <div class="w-72 shrink-0">
+      <div class="hidden md:block w-72 shrink-0">
         <InfoPanel />
       </div>
     </div>
+
+    <Teleport to="body">
+      <div v-if="showInfoPanel" class="fixed inset-0 z-50 md:hidden">
+        <div class="absolute inset-0 bg-black/50" @click="showInfoPanel = false"></div>
+        <div class="absolute inset-y-0 right-0 w-[85vw] max-w-sm">
+          <div class="h-full relative">
+            <button
+              @click="showInfoPanel = false"
+              class="absolute top-2 right-2 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-slate-800/80 text-slate-400 hover:text-white text-sm border border-white/10 transition-colors"
+            >✕</button>
+            <InfoPanel />
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
