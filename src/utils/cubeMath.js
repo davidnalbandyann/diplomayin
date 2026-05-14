@@ -232,6 +232,65 @@ function lerp(a, b, t) {
   return a + (b - a) * t
 }
 
+export function binomialBigInt(n, k) {
+  if (k < 0 || k > n) return 0n
+  if (k === 0 || k === n) return 1n
+  if (k > n - k) k = n - k
+  let res = 1n
+  for (let i = 1; i <= k; i++) {
+    res = (res * BigInt(n - k + i)) / BigInt(i)
+  }
+  return res
+}
+
+export function findCollisions(maxN) {
+  const map = new Map()
+  for (let n = 1; n <= maxN; n++) {
+    for (let k = 1; k <= Math.floor(n / 2); k++) {
+      const val = binomial(n, k)
+      if (!map.has(val)) map.set(val, [])
+      map.get(val).push({ n, k })
+    }
+  }
+  const results = []
+  for (const [value, pairs] of map) {
+    if (pairs.length > 1) {
+      results.push({ value, pairs })
+    }
+  }
+  results.sort((a, b) => a.value - b.value)
+  return results
+}
+
+export function findNearCollisions(maxN, threshold) {
+  const entries = []
+  for (let n = 1; n <= maxN; n++) {
+    for (let k = 1; k <= Math.floor(n / 2); k++) {
+      entries.push({ n, k, value: binomial(n, k) })
+    }
+  }
+  entries.sort((a, b) => a.value - b.value)
+  const results = []
+  for (let i = 0; i < entries.length - 1; i++) {
+    const diff = Math.abs(entries[i + 1].value - entries[i].value)
+    if (diff > 0 && diff <= threshold) {
+      results.push({ a: entries[i], b: entries[i + 1], diff })
+    }
+  }
+  return results
+}
+
+export function buildCollisionFrequencyMap(maxN) {
+  const map = new Map()
+  for (let n = 1; n <= maxN; n++) {
+    for (let k = 0; k <= Math.floor(n / 2); k++) {
+      const val = binomial(n, k)
+      map.set(val, (map.get(val) || 0) + 1)
+    }
+  }
+  return map
+}
+
 export function colorForK(k, n) {
   if (n === 1) return '#3b82f6'
   const t = (k - 1) / (n - 1)

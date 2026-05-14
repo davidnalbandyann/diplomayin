@@ -10,6 +10,8 @@ import DistributionWorkspace from './components/DistributionWorkspace.vue'
 import SimulationWorkspace from './components/SimulationWorkspace.vue'
 import ProofsWorkspace from './components/ProofsWorkspace.vue'
 import ThesisWorkspace from './components/ThesisWorkspace.vue'
+import BinomialIsomorphismWorkspace from './components/BinomialIsomorphismWorkspace.vue'
+import BinomialCollisionsWorkspace from './components/BinomialCollisionsWorkspace.vue'
 
 const appState = useAppState()
 provide('appState', appState)
@@ -25,6 +27,8 @@ const tabs = [
   { id: 'simulation', label: 'Սիմուլյացիա' },
   { id: 'proofs', label: 'Ապացույցներ' },
   { id: 'thesis', label: 'Պրեզենտացիա' },
+  { id: 'binomial-isomorphism', label: 'Բինոմիալ իզոմորֆություն' },
+  { id: 'binomial-collisions', label: 'Բինոմիալ բախումներ' },
 ]
 
 const workspaceComponents = {
@@ -36,6 +40,8 @@ const workspaceComponents = {
   simulation: SimulationWorkspace,
   proofs: ProofsWorkspace,
   thesis: ThesisWorkspace,
+  'binomial-isomorphism': BinomialIsomorphismWorkspace,
+  'binomial-collisions': BinomialCollisionsWorkspace,
 }
 </script>
 
@@ -132,6 +138,8 @@ const workspaceComponents = {
       <SimulationWorkspace v-else-if="appState.activeTab === 'simulation'" />
       <ProofsWorkspace v-else-if="appState.activeTab === 'proofs'" />
       <ThesisWorkspace v-else-if="appState.activeTab === 'thesis'" />
+      <BinomialIsomorphismWorkspace v-else-if="appState.activeTab === 'binomial-isomorphism'" />
+      <BinomialCollisionsWorkspace v-else-if="appState.activeTab === 'binomial-collisions'" />
     </main>
 
     <Teleport to="body">
