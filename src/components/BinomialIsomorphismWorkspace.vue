@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { binomial } from '../utils/cubeMath.js'
+import { binomialBigInt, formatBigInt } from '../utils/cubeMath.js'
 import KaTeXFormula from './KaTeXFormula.vue'
 
 const n1 = ref(16)
@@ -12,14 +12,28 @@ function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v || min))
 }
 
-function setN1(e) { n1.value = clamp(parseInt(e.target.value), 1, 50) }
+function setN1(e) { n1.value = clamp(parseInt(e.target.value), 1, 300) }
 function setK1(e) { k1.value = clamp(parseInt(e.target.value), 0, n1.value) }
-function setN2(e) { n2.value = clamp(parseInt(e.target.value), 1, 50) }
+function setN2(e) { n2.value = clamp(parseInt(e.target.value), 1, 300) }
 function setK2(e) { k2.value = clamp(parseInt(e.target.value), 0, n2.value) }
 
-const val1 = computed(() => binomial(n1.value, k1.value))
-const val2 = computed(() => binomial(n2.value, k2.value))
+const val1 = computed(() => binomialBigInt(n1.value, k1.value))
+const val2 = computed(() => binomialBigInt(n2.value, k2.value))
 const areEqual = computed(() => val1.value === val2.value)
+
+const fmt1 = computed(() => formatBigInt(val1.value))
+const fmt2 = computed(() => formatBigInt(val2.value))
+
+const diffStr = computed(() => {
+  const a = val1.value
+  const b = val2.value
+  if (a === b) return '0'
+  return a > b ? (a - b).toString() : (b - a).toString()
+})
+
+function displayVal(fmt) {
+  return typeof fmt === 'string' ? fmt : fmt.short
+}
 
 function loadExample(n1v, k1v, n2v, k2v) {
   n1.value = n1v; k1.value = k1v
@@ -43,28 +57,28 @@ function loadExample(n1v, k1v, n2v, k2v) {
           <span class="text-xs text-slate-400 font-medium">C(n₁, k₁)</span>
           <div class="flex items-center gap-2">
             <label class="text-[10px] text-slate-500 w-4">n</label>
-            <input type="number" :value="n1" @input="setN1" min="1" max="50"
+            <input type="number" :value="n1" @input="setN1" min="1" max="300"
               class="w-16 bg-slate-800/60 border border-white/10 rounded px-2 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
             <label class="text-[10px] text-slate-500 w-3">k</label>
-            <input type="number" :value="k1" @input="setK1" min="0" max="50"
+            <input type="number" :value="k1" @input="setK1" min="0" :max="n1"
               class="w-16 bg-slate-800/60 border border-white/10 rounded px-2 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
           </div>
           <div class="text-xs text-slate-300 font-mono bg-slate-800/40 rounded-lg p-2 text-center">
-            <KaTeXFormula :formula="`C(${n1}, ${k1}) = ${val1.toLocaleString()}`" />
+            <KaTeXFormula :formula="`C(${n1}, ${k1}) = ${displayVal(fmt1)}`" />
           </div>
         </div>
         <div class="space-y-2">
           <span class="text-xs text-slate-400 font-medium">C(n₂, k₂)</span>
           <div class="flex items-center gap-2">
             <label class="text-[10px] text-slate-500 w-4">n</label>
-            <input type="number" :value="n2" @input="setN2" min="1" max="50"
+            <input type="number" :value="n2" @input="setN2" min="1" max="300"
               class="w-16 bg-slate-800/60 border border-white/10 rounded px-2 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
             <label class="text-[10px] text-slate-500 w-3">k</label>
-            <input type="number" :value="k2" @input="setK2" min="0" max="50"
+            <input type="number" :value="k2" @input="setK2" min="0" :max="n2"
               class="w-16 bg-slate-800/60 border border-white/10 rounded px-2 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
           </div>
           <div class="text-xs text-slate-300 font-mono bg-slate-800/40 rounded-lg p-2 text-center">
-            <KaTeXFormula :formula="`C(${n2}, ${k2}) = ${val2.toLocaleString()}`" />
+            <KaTeXFormula :formula="`C(${n2}, ${k2}) = ${displayVal(fmt2)}`" />
           </div>
         </div>
       </div>
@@ -77,11 +91,11 @@ function loadExample(n1v, k1v, n2v, k2v) {
       ]">
         <template v-if="areEqual">
           <span class="text-base">✓</span> Հավասար կոմբինատոր ծավալ
-          <div class="text-[10px] mt-1 opacity-70">C({{ n1 }}, {{ k1 }}) = C({{ n2 }}, {{ k2 }}) = {{ val1.toLocaleString() }}</div>
+          <div class="text-[10px] mt-1 opacity-70">C({{ n1 }}, {{ k1 }}) = C({{ n2 }}, {{ k2 }}) = {{ displayVal(fmt1) }}</div>
         </template>
         <template v-else>
           <span class="text-base">✗</span> Տարբեր կոմբինատոր ծավալ
-          <div class="text-[10px] mt-1 opacity-70">|{{ val1.toLocaleString() }} - {{ val2.toLocaleString() }}| = {{ Math.abs(val1 - val2).toLocaleString() }}</div>
+          <div class="text-[10px] mt-1 opacity-70">|{{ displayVal(fmt1) }} - {{ displayVal(fmt2) }}| = {{ diffStr }}</div>
         </template>
       </div>
     </div>

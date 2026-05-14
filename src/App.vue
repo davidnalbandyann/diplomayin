@@ -12,6 +12,7 @@ import ProofsWorkspace from './components/ProofsWorkspace.vue'
 import ThesisWorkspace from './components/ThesisWorkspace.vue'
 import BinomialIsomorphismWorkspace from './components/BinomialIsomorphismWorkspace.vue'
 import BinomialCollisionsWorkspace from './components/BinomialCollisionsWorkspace.vue'
+import LyndFamilySection from './components/LyndFamilySection.vue'
 
 const appState = useAppState()
 provide('appState', appState)
@@ -29,6 +30,7 @@ const tabs = [
   { id: 'thesis', label: 'Պրեզենտացիա' },
   { id: 'binomial-isomorphism', label: 'Բինոմիալ իզոմորֆություն' },
   { id: 'binomial-collisions', label: 'Բինոմիալ բախումներ' },
+  { id: 'lynd-family', label: 'Լինդի անվերջ ընտանիք' },
 ]
 
 const workspaceComponents = {
@@ -42,6 +44,7 @@ const workspaceComponents = {
   thesis: ThesisWorkspace,
   'binomial-isomorphism': BinomialIsomorphismWorkspace,
   'binomial-collisions': BinomialCollisionsWorkspace,
+  'lynd-family': LyndFamilySection,
 }
 </script>
 
@@ -140,6 +143,7 @@ const workspaceComponents = {
       <ThesisWorkspace v-else-if="appState.activeTab === 'thesis'" />
       <BinomialIsomorphismWorkspace v-else-if="appState.activeTab === 'binomial-isomorphism'" />
       <BinomialCollisionsWorkspace v-else-if="appState.activeTab === 'binomial-collisions'" />
+      <LyndFamilySection v-else-if="appState.activeTab === 'lynd-family'" />
     </main>
 
     <Teleport to="body">

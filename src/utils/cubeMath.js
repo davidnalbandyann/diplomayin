@@ -243,6 +243,36 @@ export function binomialBigInt(n, k) {
   return res
 }
 
+export function adjacentCollisionBalance(n, k) {
+  const left = BigInt(n) * BigInt(k + 1)
+  const right = BigInt(n - k) * BigInt(n - k - 1)
+  return { left, right, equal: left === right, diff: left > right ? left - right : right - left }
+}
+
+export function isAdjacentCollision(n, k) {
+  if (k < 1 || k > n - 2) return false
+  const { equal } = adjacentCollisionBalance(n, k)
+  return equal
+}
+
+export function getLyndExamples() {
+  return [
+    { n: 15, k: 5, label: 'Lynd 1' },
+    { n: 104, k: 39, label: 'Lynd 2' },
+    { n: 714, k: 272, label: 'Lynd 3' },
+    { n: 4895, k: 1869, label: 'Lynd 4' },
+  ]
+}
+
+export function formatBigInt(val) {
+  if (typeof val !== 'bigint') val = BigInt(val)
+  const str = val.toString()
+  if (str.length <= 6) return str
+  const mantissa = str[0] + '.' + str.slice(1, 4)
+  const exp = str.length - 1
+  return { short: mantissa + '×10^' + exp, full: str }
+}
+
 export function findCollisions(maxN) {
   const map = new Map()
   for (let n = 1; n <= maxN; n++) {

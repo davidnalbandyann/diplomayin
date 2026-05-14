@@ -1,6 +1,7 @@
 <script setup>
 import { inject } from 'vue'
 import KaTeXFormula from './KaTeXFormula.vue'
+import PascalTriangleProof from './PascalTriangleProof.vue'
 
 const appState = inject('appState')
 </script>
@@ -131,6 +132,7 @@ const appState = inject('appState')
       <div class="bg-slate-800/40 rounded-lg p-3 text-xs text-slate-400">
         <strong class="text-slate-300">Օրինակ՝</strong> y = 101 (k = 3), n = 5: C(2,2) + C(3,2) + C(4,2) = 1 + 3 + 6 = 10 = C(5,3):
       </div>
+      <PascalTriangleProof />
     </div>
 
     <div class="bg-white/[0.03] border border-white/5 rounded-xl p-5 space-y-3">
