@@ -38,18 +38,18 @@ function highlightPreimage(label) {
 <template>
   <div class="space-y-3">
     <div>
-      <label class="text-[11px] text-slate-400 font-medium block mb-1">Reduced string y</label>
+      <label class="text-[11px] text-slate-400 font-medium block mb-1">Կրճատված y տողը</label>
       <input
         type="text"
         :value="inputY"
         @input="sanitizeY"
-        placeholder="e.g. 101"
+        placeholder="օրինակ. 101"
         maxlength="9"
         class="w-full bg-slate-800/60 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/40 transition-colors"
       />
       <div v-if="!yValid && inputY" class="flex items-center gap-1 mt-1 text-[10px] text-amber-400">
         <span>⚠</span>
-        <span>y must be alternating (no equal adjacent bits)</span>
+        <span>y-ը պետք է լինի ալտերնացվող (չունենա իրար հաջորդող հավասար բիթեր)</span>
       </div>
     </div>
 
@@ -61,10 +61,10 @@ function highlightPreimage(label) {
       </div>
 
       <div class="flex items-center gap-2 text-xs">
-        <span class="text-slate-500">Count:</span>
+        <span class="text-slate-500">Քանակը:</span>
         <span class="font-mono text-slate-300">{{ preimageData.count }}</span>
-        <span class="text-slate-500">actual</span>
-        <span class="text-slate-600">vs</span>
+        <span class="text-slate-500">փաստացի</span>
+        <span class="text-slate-600">ընդդեմ</span>
         <KaTeXFormula
           :formula="`C(${hc.n.value - 1}, ${preimageData.k - 1}) = ${preimageData.theoretical}`"
         />
@@ -74,11 +74,11 @@ function highlightPreimage(label) {
             preimageData.match ? 'text-emerald-400 bg-emerald-950/40' : 'text-amber-400 bg-amber-950/40',
           ]"
         >
-          {{ preimageData.match ? 'match' : 'mismatch' }}
+          {{ preimageData.match ? 'համընկնում' : 'անհամապատասխանություն' }}
         </span>
       </div>
 
-      <div class="text-xs text-slate-400 font-medium mt-2">Preimages</div>
+      <div class="text-xs text-slate-400 font-medium mt-2">Նախապատկերներ</div>
       <div class="max-h-36 overflow-y-auto space-y-0.5">
         <div
           v-for="(x, i) in preimageData.preimages"
@@ -97,7 +97,7 @@ function highlightPreimage(label) {
     </template>
 
     <div v-if="!inputY" class="text-center text-slate-600 text-xs py-6">
-      Enter a reduced string y or click a vertex to auto-populate.
+      Մուտքագրեք կրճատված y տողը կամ սեղմեք գագաթի վրա՝ ավտոմատ լրացման համար:
     </div>
   </div>
 </template>

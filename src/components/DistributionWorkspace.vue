@@ -30,9 +30,9 @@ const maxTotal = computed(() => Math.max(...entries.value.map(e => e.total), 1))
 <template>
   <div class="h-full overflow-y-auto px-4 py-4 md:px-8 md:py-6 max-w-3xl mx-auto space-y-6">
     <div>
-      <h2 class="text-base font-semibold text-slate-200">Distribution Over k</h2>
+      <h2 class="text-base font-semibold text-slate-200">Բաշխումն ըստ k-ի</h2>
       <p class="text-xs text-slate-500 mt-1">
-        How the 2<sup>{{ appState.dimension }}</sup> vertices are partitioned into equivalence classes by run count.
+        Ինչպես են 2<sup>{{ appState.dimension }}</sup> գագաթները տրոհվում համարժեքության դասերի՝ ըստ հատվածների քանակի։
       </p>
     </div>
 
@@ -62,9 +62,9 @@ const maxTotal = computed(() => Math.max(...entries.value.map(e => e.total), 1))
         <thead>
           <tr class="text-slate-500 border-b border-white/5">
             <th class="text-left py-2 px-3 font-medium">k</th>
-            <th class="text-right px-2 py-2 font-medium">Images</th>
-            <th class="text-right px-2 py-2 font-medium">Class size</th>
-            <th class="text-right px-3 py-2 font-medium">Total</th>
+            <th class="text-right px-2 py-2 font-medium">Պատկերներ</th>
+            <th class="text-right px-2 py-2 font-medium">Դասի չափը</th>
+            <th class="text-right px-3 py-2 font-medium">Ընդհանուր</th>
           </tr>
         </thead>
         <tbody>
@@ -91,22 +91,22 @@ const maxTotal = computed(() => Math.max(...entries.value.map(e => e.total), 1))
       </div>
 
       <div class="flex items-center justify-between text-xs">
-        <span class="text-slate-500">Computed total</span>
+        <span class="text-slate-500">Հաշվարկված ընդհանուր քանակ</span>
         <span class="font-mono text-slate-300">{{ computedTotal.toLocaleString() }}</span>
       </div>
       <div class="flex items-center justify-between text-xs">
-        <span class="text-slate-500">Expected (2<sup>{{ appState.dimension }}</sup>)</span>
+        <span class="text-slate-500">Սպասվող քանակ (2<sup>{{ appState.dimension }}</sup>)</span>
         <span class="font-mono text-slate-300">{{ expectedTotal.toLocaleString() }}</span>
       </div>
       <div class="flex items-center justify-between text-xs pt-1 border-t border-white/5">
-        <span class="text-slate-500">Verification</span>
+        <span class="text-slate-500">Ստուգում</span>
         <span
           :class="[
             'text-xs font-mono px-1.5 py-0.5 rounded',
             isValid ? 'text-emerald-400 bg-emerald-950/40' : 'text-amber-400 bg-amber-950/40',
           ]"
         >
-          {{ isValid ? 'valid ✓' : 'mismatch ✗' }}
+          {{ isValid ? 'վավեր է ✓' : 'անհամապատասխանություն ✗' }}
         </span>
       </div>
     </div>

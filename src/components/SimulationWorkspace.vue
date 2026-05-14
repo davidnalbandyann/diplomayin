@@ -90,9 +90,9 @@ const maxExpPct = computed(() => Math.max(...tableEntries.value.map(e => e.expPc
 <template>
   <div class="h-full overflow-y-auto px-4 py-4 md:px-8 md:py-6 max-w-3xl mx-auto space-y-6">
     <div>
-      <h2 class="text-base font-semibold text-slate-200">Simulation Lab</h2>
+      <h2 class="text-base font-semibold text-slate-200">Սիմուլյացիոն լաբորատորիա</h2>
       <p class="text-xs text-slate-500 mt-1">
-        Compare experimental and theoretical distributions of run counts for random binary strings.
+        Համեմատեք պատահական երկուական տողերի միատարր հատվածների քանակի փորձնական և տեսական բաշխումները:
       </p>
     </div>
 
@@ -101,14 +101,14 @@ const maxExpPct = computed(() => Math.max(...tableEntries.value.map(e => e.expPc
         @click="generateOne"
         class="text-xs px-4 py-2 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-colors font-medium"
       >
-        Generate 1
+        Գեներացնել 1-ը
       </button>
       <button
         @click="runBatch(sampleCount)"
         :disabled="running"
         class="text-xs px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 transition-colors font-medium disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        {{ running ? 'Running…' : `Run ${sampleCount}` }}
+        {{ running ? 'Ընթացքի մեջ է…' : `Գործարկել ${sampleCount}` }}
       </button>
       <input
         type="number"
@@ -122,17 +122,17 @@ const maxExpPct = computed(() => Math.max(...tableEntries.value.map(e => e.expPc
         @click="clearSim"
         class="text-xs px-3 py-2 rounded text-slate-500 hover:text-slate-300 transition-colors"
       >
-        Clear
+        Մաքրել
       </button>
     </div>
 
     <div v-if="lastResult" class="bg-white/[0.03] rounded-xl p-4 space-y-2">
       <div class="flex items-center justify-between text-sm">
-        <span class="text-slate-500">Last string</span>
+        <span class="text-slate-500">Վերջին տողը</span>
         <span class="font-mono text-slate-200">{{ lastResult.string }}</span>
       </div>
       <div class="flex items-center justify-between text-sm">
-        <span class="text-slate-500">Run count</span>
+        <span class="text-slate-500">Հատվածների քանակ</span>
         <span class="font-mono text-blue-300">k = {{ lastResult.k }}</span>
       </div>
       <div class="flex items-center justify-between text-sm">
@@ -143,13 +143,13 @@ const maxExpPct = computed(() => Math.max(...tableEntries.value.map(e => e.expPc
         @click="highlightLast"
         class="text-xs text-blue-400 hover:text-blue-300 transition-colors"
       >
-        Highlight in Classes tab →
+        Ընդգծել «Դասեր» ներդիրում →
       </button>
     </div>
 
     <template v-if="totalSims > 0">
       <div class="text-xs text-slate-500">
-        Total simulations: <span class="font-mono text-slate-300">{{ totalSims }}</span>
+        Ընդհանուր սիմուլյացիաներ՝ <span class="font-mono text-slate-300">{{ totalSims }}</span>
       </div>
 
       <div class="bg-white/[0.03] rounded-xl p-4 space-y-2">
@@ -168,7 +168,7 @@ const maxExpPct = computed(() => Math.max(...tableEntries.value.map(e => e.expPc
             <span class="text-[8px] font-mono text-slate-500">{{ e.k }}</span>
           </div>
         </div>
-        <div class="text-[9px] text-slate-600 text-center">Experimental distribution</div>
+        <div class="text-[9px] text-slate-600 text-center">Փորձնական բաշխում</div>
       </div>
 
       <div class="bg-white/[0.03] rounded-xl overflow-hidden">
@@ -176,9 +176,9 @@ const maxExpPct = computed(() => Math.max(...tableEntries.value.map(e => e.expPc
           <thead>
             <tr class="text-slate-500 border-b border-white/5">
               <th class="text-left py-2 px-3 font-medium">k</th>
-              <th class="text-right px-2 py-2 font-medium">Count</th>
-              <th class="text-right px-2 py-2 font-medium">Exp. %</th>
-              <th class="text-right px-3 py-2 font-medium">Theo. %</th>
+              <th class="text-right px-2 py-2 font-medium">Քանակ</th>
+              <th class="text-right px-2 py-2 font-medium">Փորձ. %</th>
+              <th class="text-right px-3 py-2 font-medium">Տես. %</th>
             </tr>
           </thead>
           <tbody>
@@ -202,7 +202,7 @@ const maxExpPct = computed(() => Math.max(...tableEntries.value.map(e => e.expPc
     </template>
 
     <div v-if="totalSims === 0" class="text-center text-slate-600 text-sm py-12">
-      No simulations yet. Generate a string or run a batch.
+      Սիմուլյացիաներ առկա չեն: Գեներացրեք տող կամ գործարկեք խմբաքանակ:
     </div>
   </div>
 </template>

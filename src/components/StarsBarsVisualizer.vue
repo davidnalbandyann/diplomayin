@@ -20,9 +20,9 @@ const binomVal = computed(() => binomial(props.n - 1, props.k - 1))
 <template>
   <div class="bg-white/[0.03] rounded-lg p-3 space-y-3">
     <div class="flex items-center justify-between">
-      <span class="text-[11px] font-medium text-slate-400">Stars &amp; Bars</span>
+      <span class="text-[11px] font-medium text-slate-400">Աստղեր և ձողեր</span>
       <span v-if="total > 0" class="text-[10px] text-slate-500 font-mono">
-        Composition {{ currentIndex + 1 }} / {{ total }}
+        Տրոհում {{ currentIndex + 1 }} / {{ total }}
       </span>
     </div>
 
@@ -51,12 +51,12 @@ const binomVal = computed(() => binomial(props.n - 1, props.k - 1))
           @click="emit('prev')"
           :disabled="currentIndex === 0"
           class="text-[10px] px-3 py-1 rounded-md bg-white/5 text-slate-400 hover:text-slate-200 hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-        >Previous</button>
+        >Նախորդը</button>
         <button
           @click="emit('next')"
           :disabled="currentIndex === total - 1"
           class="text-[10px] px-3 py-1 rounded-md bg-white/5 text-slate-400 hover:text-slate-200 hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-        >Next</button>
+        >Հաջորդը</button>
       </div>
     </div>
 

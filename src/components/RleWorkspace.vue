@@ -61,25 +61,25 @@ const savedPct = computed(() => {
 <template>
   <div class="h-full overflow-y-auto px-4 py-4 md:px-8 md:py-6 max-w-3xl mx-auto space-y-6">
     <div>
-      <h2 class="text-base font-semibold text-slate-200">Run-Length Reduction</h2>
+      <h2 class="text-base font-semibold text-slate-200">Միատարր հատվածների երկարության կրճատում</h2>
       <p class="text-xs text-slate-500 mt-1">
-        The operator g(x) replaces each maximal run with a single bit, producing an alternating reduced string.
+        g(x) օպերատորը յուրաքանչյուր առավելագույն միատարր հատված փոխարինում է մեկ բիթով՝ ստանալով հերթագայող կրճատված տող։
       </p>
     </div>
 
     <div>
-      <label class="text-xs text-slate-400 font-medium block mb-1.5">Binary string x (length n = {{ appState.dimension }})</label>
+      <label class="text-xs text-slate-400 font-medium block mb-1.5">Երկուական x տող (երկարությունը n = {{ appState.dimension }})</label>
       <input
         type="text"
         :value="inputStr"
         @input="sanitizeBinary"
-        placeholder="e.g. 111001"
+        placeholder="օրինակ՝ 111001"
         :maxlength="appState.dimension"
         class="w-full max-w-sm bg-slate-800/60 border border-white/10 rounded-lg px-4 py-3 text-base font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/40 transition-colors"
       />
       <div v-if="lenMismatch" class="flex items-center gap-1 mt-1.5 text-xs text-amber-400">
         <span>⚠</span>
-        <span>Length {{ inputStr.length }} ≠ n = {{ appState.dimension }}</span>
+        <span>Երկարությունը {{ inputStr.length }} ≠ n = {{ appState.dimension }}</span>
       </div>
     </div>
 
@@ -129,22 +129,22 @@ const savedPct = computed(() => {
             <div class="text-lg font-mono text-blue-300 mt-1">{{ stats.k }}</div>
           </div>
           <div class="bg-slate-800/40 rounded-lg p-3 text-center">
-            <div class="text-[10px] text-slate-500 uppercase tracking-wide">Runs</div>
+            <div class="text-[10px] text-slate-500 uppercase tracking-wide">Հատվածներ</div>
             <div class="text-lg font-mono text-slate-300 mt-1">[{{ stats.runLengths.join(', ') }}]</div>
           </div>
           <div class="bg-slate-800/40 rounded-lg p-3 text-center">
-            <div class="text-[10px] text-slate-500 uppercase tracking-wide">Ratio</div>
+            <div class="text-[10px] text-slate-500 uppercase tracking-wide">Հարաբերակցություն</div>
             <div class="text-lg font-mono text-slate-300 mt-1">{{ stats.k }}/{{ stats.n }}</div>
           </div>
           <div class="bg-slate-800/40 rounded-lg p-3 text-center">
-            <div class="text-[10px] text-slate-500 uppercase tracking-wide">Saved</div>
+            <div class="text-[10px] text-slate-500 uppercase tracking-wide">Խնայված</div>
             <div class="text-lg font-mono text-emerald-400 mt-1">{{ savedPct }}%</div>
           </div>
         </div>
 
         <div class="space-y-1.5">
           <div class="flex items-center justify-between text-xs">
-            <span class="text-slate-500">Compression ratio</span>
+            <span class="text-slate-500">Սեղմման գործակից</span>
             <span class="font-mono text-slate-300">{{ stats.k }}/{{ stats.n }} = {{ compressionPct }}%</span>
           </div>
           <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
@@ -159,13 +159,13 @@ const savedPct = computed(() => {
         </div>
 
         <div class="text-xs text-slate-500 leading-relaxed bg-slate-800/40 rounded-lg p-3 border border-white/5">
-          Random binary strings usually have k ≈ n/2, so RLE is most effective when long repeated runs exist.
+          Պատահական երկուական տողերը սովորաբար ունենում են k ≈ n/2, ուստի RLE-ն առավել արդյունավետ է, երբ առկա են երկար կրկնվող հատվածներ:
         </div>
       </div>
     </template>
 
     <div v-if="!inputStr" class="text-center text-slate-600 text-sm py-12">
-      Enter a binary string or click a vertex in the Classes tab to populate.
+      Մուտքագրեք երկուական տող կամ սեղմեք գագաթի վրա «Դասեր» ներդիրում՝ լրացնելու համար:
     </div>
   </div>
 </template>

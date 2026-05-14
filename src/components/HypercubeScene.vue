@@ -18,9 +18,9 @@ const gradientCss = `linear-gradient(to right, ${GRADIENT_STOPS.join(', ')})`
         @change="hc.toggleAutoRotate()"
         class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
       />
-      Rotate
+      Պտտել
     </label>
-    <div v-if="hc.isTransitioning.value" class="text-[10px] text-slate-500 animate-pulse">settling...</div>
+    <div v-if="hc.isTransitioning.value" class="text-[10px] text-slate-500 animate-pulse">տեղավորում...</div>
     <div class="hidden sm:flex items-center gap-1 bg-white/5 rounded-lg p-0.5">
       <button
         :class="[
@@ -30,7 +30,7 @@ const gradientCss = `linear-gradient(to right, ${GRADIENT_STOPS.join(', ')})`
             : 'text-slate-500 hover:text-slate-300'
         ]"
         @click="hc.setLayoutMode('standard')"
-      >Standard</button>
+      >Ստանդարտ</button>
       <button
         :class="[
           'text-[10px] px-2 py-1 rounded-md transition-all font-medium',
@@ -39,7 +39,7 @@ const gradientCss = `linear-gradient(to right, ${GRADIENT_STOPS.join(', ')})`
             : 'text-slate-500 hover:text-slate-300'
         ]"
         @click="hc.setLayoutMode('shell')"
-      >Shell</button>
+      >Թաղանթ</button>
     </div>
     <button
       :class="[
@@ -49,7 +49,7 @@ const gradientCss = `linear-gradient(to right, ${GRADIENT_STOPS.join(', ')})`
           : 'text-slate-500 hover:text-slate-300'
       ]"
       @click="hc.togglePath()"
-    >Path</button>
+    >Ուղի</button>
     <div class="flex sm:hidden items-center gap-1 bg-white/5 rounded-lg p-0.5">
       <button
         :class="[

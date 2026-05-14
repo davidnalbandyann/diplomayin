@@ -17,14 +17,14 @@ provide('appState', appState)
 const showMobileMenu = ref(false)
 
 const tabs = [
-  { id: 'classes', label: 'Classes' },
-  { id: 'rle', label: 'RLE' },
-  { id: 'preimages', label: 'Preimages' },
-  { id: 'starsbars', label: 'Stars & Bars' },
-  { id: 'distribution', label: 'Distribution' },
-  { id: 'simulation', label: 'Simulation' },
-  { id: 'proofs', label: 'Proofs' },
-  { id: 'thesis', label: 'Thesis' },
+  { id: 'classes', label: 'Դասեր' },
+  { id: 'rle', label: 'RLE կոդավորում' },
+  { id: 'preimages', label: 'Նախապատկերներ' },
+  { id: 'starsbars', label: 'Աստղեր և ձողեր' },
+  { id: 'distribution', label: 'Բաշխում' },
+  { id: 'simulation', label: 'Սիմուլյացիա' },
+  { id: 'proofs', label: 'Ապացույցներ' },
+  { id: 'thesis', label: 'Պրեզենտացիա' },
 ]
 
 const workspaceComponents = {
@@ -52,7 +52,7 @@ const workspaceComponents = {
             <path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
           </svg>
         </button>
-        <span class="text-[11px] font-medium text-slate-400 tracking-wide hidden sm:inline">Hypercube Visualizer</span>
+        <span class="text-[11px] font-medium text-slate-400 tracking-wide hidden sm:inline">Հիպերխորանարդի վիզուալիզատոր</span>
         <div class="flex items-center gap-2 ml-auto md:ml-0">
           <span class="text-[11px] text-slate-500">n =</span>
           <input
@@ -117,7 +117,7 @@ const workspaceComponents = {
         <div class="absolute inset-0 bg-black/50" @click="showMobileMenu = false"></div>
         <div class="absolute inset-y-0 right-0 w-[75vw] max-w-xs glass-panel-strong overflow-y-auto">
           <div class="p-4 space-y-1">
-            <div class="text-xs text-slate-500 font-medium mb-3">Tabs</div>
+            <div class="text-xs text-slate-500 font-medium mb-3">Բաժիններ</div>
             <button
               v-for="tab in tabs"
               :key="tab.id"

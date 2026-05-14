@@ -61,18 +61,18 @@ const savedPct = computed(() => {
 <template>
   <div class="space-y-3">
     <div>
-      <label class="text-[11px] text-slate-400 font-medium block mb-1">Binary string x</label>
+      <label class="text-[11px] text-slate-400 font-medium block mb-1">Երկուական x տողը</label>
       <input
         type="text"
         :value="inputStr"
         @input="sanitizeBinary"
-        placeholder="e.g. 111001"
+        placeholder="օրինակ 111001"
         maxlength="9"
         class="w-full bg-slate-800/60 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/40 transition-colors"
       />
       <div v-if="lenMismatch" class="flex items-center gap-1 mt-1 text-[10px] text-amber-400">
         <span>⚠</span>
-        <span>Length {{ inputStr.length }} ≠ n = {{ hc.n.value }}</span>
+        <span>Երկարություն {{ inputStr.length }} ≠ n = {{ hc.n.value }}</span>
       </div>
     </div>
 
@@ -87,7 +87,7 @@ const savedPct = computed(() => {
           <span class="font-mono text-emerald-300">{{ gx }}</span>
         </div>
         <div class="text-xs text-slate-400">
-          <span class="text-slate-500">Run lengths = </span>
+          <span class="text-slate-500">Միատարր հատվածների երկարությունները = </span>
           <span class="font-mono text-slate-300">[{{ stats.runLengths.join(', ') }}]</span>
         </div>
         <div class="text-xs text-slate-400">
@@ -105,7 +105,7 @@ const savedPct = computed(() => {
 
       <div class="bg-white/[0.03] rounded-lg p-3 space-y-2">
         <div class="flex items-center justify-between text-xs">
-          <span class="text-slate-500">Compression ratio</span>
+          <span class="text-slate-500">Սեղմման գործակից</span>
           <span class="font-mono text-slate-300">{{ stats.k }}/{{ stats.n }} = {{ compressionPct }}%</span>
         </div>
         <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
@@ -118,18 +118,18 @@ const savedPct = computed(() => {
           ></div>
         </div>
         <div class="flex items-center justify-between text-xs">
-          <span class="text-slate-500">Saved</span>
+          <span class="text-slate-500">Խնայված (կամ Կրճատված)</span>
           <span class="font-mono text-emerald-400">{{ savedPct }}%</span>
         </div>
       </div>
 
       <div class="text-[10px] text-slate-500 leading-relaxed bg-slate-800/40 rounded-lg p-2.5 border border-white/5">
-        Random binary strings usually have k ≈ n/2, so RLE is most effective when long repeated runs exist.
+        Պատահական երկուական տողերը սովորաբար ունենում են k \approx n/2, ուստի RLE մեթոդն առավել արդյունավետ է, երբ առկա են երկար կրկնվող հատվածներ:
       </div>
     </template>
 
     <div v-if="!inputStr" class="text-center text-slate-600 text-xs py-6">
-      Enter a binary string or click a vertex to populate.
+      Մուտքագրեք երկուական տող կամ սեղմեք գագաթի վրա՝ լրացնելու համար:
     </div>
   </div>
 </template>

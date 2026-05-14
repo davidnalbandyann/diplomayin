@@ -96,14 +96,14 @@ function setSamples(val) {
         @click="generateOne"
         class="text-[11px] px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-colors font-medium"
       >
-        Generate 1
+        Գեներացնել 1-ը
       </button>
       <button
         @click="runBatch(sampleCount)"
         :disabled="running"
         class="text-[11px] px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 transition-colors font-medium disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        {{ running ? 'Running...' : `Run ${sampleCount}` }}
+        {{ running ? 'Ընթացքի մեջ է...' : `Գործարկել ${sampleCount}` }}
       </button>
       <input
         type="number"
@@ -117,29 +117,29 @@ function setSamples(val) {
         @click="clearSim"
         class="text-[10px] px-2 py-1 rounded text-slate-500 hover:text-slate-300 transition-colors"
       >
-        Clear
+        Մաքրել
       </button>
     </div>
 
     <div v-if="lastResult" class="bg-white/[0.03] rounded-lg p-2.5 space-y-1">
       <div class="flex items-center justify-between">
-        <span class="text-[11px] text-slate-500">Last string</span>
+        <span class="text-[11px] text-slate-500">Վերջին տողը</span>
         <span class="font-mono text-xs text-slate-200">{{ lastResult.string }}</span>
       </div>
       <div class="flex items-center justify-between">
-        <span class="text-[11px] text-slate-500">Run count</span>
+        <span class="text-[11px] text-slate-500">Հատվածների քանակ</span>
         <span class="font-mono text-sm text-blue-300">k = {{ lastResult.k }}</span>
       </div>
       <button
         @click="highlightLast"
         class="text-[10px] text-blue-400 hover:text-blue-300 transition-colors"
       >
-        Highlight in scene
+        Ընդգծել տեսարանում
       </button>
     </div>
 
     <div v-if="totalSims > 0" class="text-[10px] text-slate-500">
-      Total simulations: {{ totalSims }}
+      Ընդհանուր սիմուլյացիաներ՝ {{ totalSims }}
     </div>
 
     <div v-if="totalSims > 0" class="overflow-x-auto">
@@ -147,9 +147,9 @@ function setSamples(val) {
         <thead>
           <tr class="text-slate-500 border-b border-white/5">
             <th class="text-left py-1 pr-2 font-medium">k</th>
-            <th class="text-right px-2 py-1 font-medium">Count</th>
-            <th class="text-right px-2 py-1 font-medium">Exp. %</th>
-            <th class="text-right px-2 py-1 font-medium">Theo. %</th>
+            <th class="text-right px-2 py-1 font-medium">Քանակ</th>
+            <th class="text-right px-2 py-1 font-medium">Փորձ. %</th>
+            <th class="text-right px-2 py-1 font-medium">Տես. %</th>
           </tr>
         </thead>
         <tbody>
@@ -168,7 +168,7 @@ function setSamples(val) {
     </div>
 
     <div v-if="totalSims === 0" class="text-center text-slate-600 text-xs py-6">
-      No simulations yet. Generate a string or run a batch.
+      Սիմուլյացիաներ առկա չեն: Գեներացրեք տող կամ գործարկեք խմբաքանակ:
     </div>
   </div>
 </template>

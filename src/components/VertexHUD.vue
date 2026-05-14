@@ -35,11 +35,11 @@ if (typeof document !== 'undefined') {
       >
         <div class="glass-panel-strong rounded-lg px-4 py-3 text-xs space-y-1.5 min-w-[160px]">
           <div class="flex items-center justify-between gap-4">
-            <span class="text-slate-400">Binary</span>
+            <span class="text-slate-400">Երկուական</span>
             <span class="font-mono text-slate-200">{{ hc.hoveredVertex.value.label }}</span>
           </div>
           <div class="flex items-center justify-between gap-4">
-            <span class="text-slate-400">Run count</span>
+            <span class="text-slate-400">Հատվածների քանակ</span>
             <span class="font-mono text-blue-300 font-semibold">k = {{ hc.hoveredVertex.value.k }}</span>
           </div>
           <div class="flex items-center justify-between gap-4">

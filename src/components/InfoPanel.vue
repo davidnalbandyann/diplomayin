@@ -55,11 +55,11 @@ function runBreakdown(vertex) {
 <template>
   <div class="h-full flex flex-col glass-panel-strong rounded-xl overflow-hidden">
     <div class="px-4 py-3 border-b border-white/5">
-      <h2 class="text-sm font-semibold text-slate-200">Equivalence Classes</h2>
+      <h2 class="text-sm font-semibold text-slate-200">Համարժեքության դասեր</h2>
       <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
-        Vertices are grouped by <span class="text-blue-300">run count</span>
+        Գագաթները խմբավորված են ըստ <span class="text-blue-300">միատարր հատվածների քանակի</span>
         <span class="font-math text-slate-300 ml-1">k</span> —
-        the number of maximal consecutive runs of the same bit.
+        նույն բիթի առավելագույն հաջորդական հատվածների քանակը:համընկնում
       </p>
     </div>
 
@@ -127,19 +127,19 @@ function runBreakdown(vertex) {
           </span>
           <span class="text-white/5">|</span>
           <span>
-            found <span class="font-mono text-slate-300">{{ entry.actual }}</span>
+            գտնվել է <span class="font-mono text-slate-300">{{ entry.actual }}</span>
           </span>
         </div>
 
         <div v-if="entry.highlighted" class="mt-2 pt-2 border-t border-white/5 space-y-1.5">
           <div class="text-[10px] text-slate-500">
-            Formula:
+            Բանաձև:
             <span class="font-math text-slate-300">
               |H({{ entry.k }}, {{ hc.n.value }})| = 2 &middot; C({{ hc.n.value - 1 }}, {{ entry.k - 1 }}) = {{ entry.theoretical }}
             </span>
           </div>
           <div v-if="selectedVertex" class="text-[10px] text-slate-500">
-            Runs in <span class="font-mono text-slate-300">{{ selectedVertex.label }}</span>:
+            Միատարր հատվածները <span class="font-mono text-slate-300">{{ selectedVertex.label }}</span>:
             <div class="flex items-center gap-0 mt-0.5 font-mono text-[11px]">
               <template v-for="(rb, i) in runBreakdown(selectedVertex)" :key="i">
                 <span v-if="rb.isBoundary" class="text-blue-400 mx-0.5">|</span>
@@ -161,7 +161,7 @@ function runBreakdown(vertex) {
       </div>
 
       <div v-if="entries.length === 0" class="text-center text-slate-600 text-xs py-8">
-        No data
+        Տվյալներ չկան
       </div>
     </div>
 
