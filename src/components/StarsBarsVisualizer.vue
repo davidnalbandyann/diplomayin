@@ -30,7 +30,7 @@ const binomVal = computed(() => binomial(props.n - 1, props.k - 1))
       <div class="flex flex-wrap items-center gap-0.5 text-lg leading-relaxed font-mono justify-center py-2">
         <template v-for="(part, i) in composition" :key="i">
           <span v-if="i > 0" class="text-blue-400 mx-1 text-xl font-light">│</span>
-          <span v-for="j in part" :key="j" class="text-slate-300">●</span>
+          <span v-for="j in part" :key="j" class="text-slate-300">★</span>
         </template>
       </div>
 

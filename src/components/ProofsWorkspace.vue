@@ -72,7 +72,7 @@ const appState = inject('appState')
         <KaTeXFormula :formula="`\\#\\text{ընտրություններ} = C(n - 1, k - 1)`" :displayMode="true" />
       </div>
       <div class="bg-slate-800/40 rounded-lg p-3 text-xs text-slate-400 text-center font-mono text-lg leading-relaxed">
-        ● ● <span class="text-blue-400">│</span> ● ● ● <span class="text-blue-400">│</span> ● ●
+        ★ ★ <span class="text-blue-400">│</span> ★ ★ ★ <span class="text-blue-400">│</span> ★ ★
         <div class="text-[10px] text-slate-500 mt-1">n = 7, k = 3, կազմություն [2, 3, 2]</div>
       </div>
     </div>
@@ -157,7 +157,7 @@ const appState = inject('appState')
         Քանի որ դասերը չհատվող են (դրանք համարժեքության դասեր են) և դրանց չափերի գումարը հավասար է <span class="font-mono text-slate-300">Σⁿ</span> բազմության հզորությանը, յուրաքանչյուր երկուական տող պատկանում է ճիշտ մեկ դասի:
       </p>
       <div class="bg-slate-800/40 rounded-lg p-3 text-xs text-slate-400">
-        <strong class="text-slate-300">Օրինակ՝</strong> n = 4: k=1՝ 2×1=2, k=2՝ 2×3=6, k=3՝ 2×3=6, k=4՝ 2×1=2: Ընդամենը = 16 = 2⁴: n = {{ appState.dimension }}-ի համար «Բաշխում» ներդիրը հաստատում է այս նույնականությունը:
+        <strong class="text-slate-300">Օրինակ՝</strong> n = 4: k=1՝ 2×1=2, k=2՝ 2×3=6, k=3՝ 2×3=6, k=4՝ 2×1=2: Ընդամենը = 16 = 2⁴: n = {{ appState.workspaceDimension }}-ի համար «Բաշխում» ներդիրը հաստատում է այս նույնականությունը:
       </div>
     </div>
 

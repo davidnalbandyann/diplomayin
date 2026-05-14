@@ -14,7 +14,7 @@ watch(() => appState.selectedBinaryString, (val) => {
 function sanitizeBinary(e) {
   const val = e.target.value.replace(/[^01]/g, '')
   inputStr.value = val
-    if (val.length === appState.dimension) {
+    if (val.length === appState.workspaceDimension) {
     appState.setSelectedBinaryString(val)
   }
 }
@@ -44,7 +44,7 @@ const runViz = computed(() => {
 
 const lenMismatch = computed(() => {
   if (!inputStr.value) return false
-  return inputStr.value.length !== appState.dimension
+  return inputStr.value.length !== appState.workspaceDimension
 })
 
 const compressionPct = computed(() => {
@@ -68,18 +68,18 @@ const savedPct = computed(() => {
     </div>
 
     <div>
-      <label class="text-xs text-slate-400 font-medium block mb-1.5">Երկուական x տող (երկարությունը n = {{ appState.dimension }})</label>
+      <label class="text-xs text-slate-400 font-medium block mb-1.5">Երկուական x տող (երկարությունը n = {{ appState.workspaceDimension }})</label>
       <input
         type="text"
         :value="inputStr"
         @input="sanitizeBinary"
         placeholder="օրինակ՝ 111001"
-        :maxlength="appState.dimension"
+        :maxlength="appState.workspaceDimension"
         class="w-full max-w-sm bg-slate-800/60 border border-white/10 rounded-lg px-4 py-3 text-base font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/40 transition-colors"
       />
       <div v-if="lenMismatch" class="flex items-center gap-1 mt-1.5 text-xs text-amber-400">
         <span>⚠</span>
-        <span>Երկարությունը {{ inputStr.length }} ≠ n = {{ appState.dimension }}</span>
+        <span>Երկարությունը {{ inputStr.length }} ≠ n = {{ appState.workspaceDimension }}</span>
       </div>
     </div>
 

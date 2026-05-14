@@ -11,7 +11,7 @@ const frequencies = ref({})
 const totalSims = ref(0)
 const running = ref(false)
 
-watch(() => appState.dimension, () => {
+watch(() => appState.workspaceDimension, () => {
   frequencies.value = {}
   totalSims.value = 0
   lastResult.value = null
@@ -26,7 +26,7 @@ function generateRandomString(length) {
 }
 
 function runSingle() {
-  const s = generateRandomString(appState.dimension)
+  const s = generateRandomString(appState.workspaceDimension)
   const k = runCount(s.split('').map(Number))
   return { string: s, k }
 }
@@ -68,7 +68,7 @@ function setSamples(val) {
 }
 
 const tableEntries = computed(() => {
-  const n = appState.dimension
+  const n = appState.workspaceDimension
   const total = totalSims.value
   const entries = []
   for (let k = 1; k <= n; k++) {
@@ -197,7 +197,7 @@ const maxExpPct = computed(() => Math.max(...tableEntries.value.map(e => e.expPc
       </div>
 
       <div class="text-xs text-slate-500 text-center">
-        <KaTeXFormula :formula="`P(K = k) = C(${appState.dimension} - 1, k - 1) \\; / \\; 2^{${appState.dimension} - 1}`" />
+        <KaTeXFormula :formula="`P(K = k) = C(${appState.workspaceDimension} - 1, k - 1) \\; / \\; 2^{${appState.workspaceDimension} - 1}`" />
       </div>
     </template>
 

@@ -33,7 +33,7 @@ const yValid = computed(() => {
 const preimageData = computed(() => {
   const y = inputY.value
   if (!y) return null
-  return getPreimagesForReducedString(y, appState.dimension)
+  return getPreimagesForReducedString(y, appState.workspaceDimension)
 })
 
 const currentComposition = computed(() => {
@@ -78,13 +78,13 @@ function nextComp() {
         </div>
       </div>
       <div class="text-xs text-slate-500">
-        n = <span class="font-mono text-slate-300">{{ appState.dimension }}</span>
+        n = <span class="font-mono text-slate-300">{{ appState.workspaceDimension }}</span>
       </div>
     </div>
 
     <template v-if="preimageData && yValid && inputY && currentComposition">
       <StarsBarsVisualizer
-        :n="appState.dimension"
+        :n="appState.workspaceDimension"
         :k="preimageData.k"
         :composition="currentComposition"
         :currentIndex="currentCompIdx"
@@ -102,7 +102,7 @@ function nextComp() {
           Յուրաքանչյուր <span class="font-mono text-slate-200">[l₁, l₂, …, lₖ]</span> տրոհում, որտեղ <span class="font-mono text-slate-200">Σ lᵢ = n</span> և <span class="font-mono text-slate-200">lᵢ ≥ 1</span>, համապատասխանում է մեկ նախապատկերի: <span class="font-mono text-slate-200">y</span> տողի ընդլայնումը, կրկնելով <span class="font-mono text-slate-200">y[i]</span>-ն ուղիղ <span class="font-mono text-slate-200">lᵢ</span> անգամ, տալիս է <span class="font-mono text-slate-200">x</span> տողը:
         </p>
         <div class="mt-2 text-center">
-          <KaTeXFormula :formula="`\\text{քանակ} = C(${appState.dimension} - 1, ${preimageData.k} - 1) = ${preimageData.theoretical}`" />
+          <KaTeXFormula :formula="`\\text{քանակ} = C(${appState.workspaceDimension} - 1, ${preimageData.k} - 1) = ${preimageData.theoretical}`" />
         </div>
       </div>
     </template>

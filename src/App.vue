@@ -1,6 +1,6 @@
 <script setup>
 import { ref, provide } from 'vue'
-import { N_MIN, N_MAX } from './config.js'
+import { N_MIN, N_MAX, N_MAX_ANALYSIS } from './config.js'
 import { useAppState } from './composables/useAppState.js'
 import ClassesWorkspace from './components/ClassesWorkspace.vue'
 import RleWorkspace from './components/RleWorkspace.vue'
@@ -53,24 +53,46 @@ const workspaceComponents = {
           </svg>
         </button>
         <span class="text-[11px] font-medium text-slate-400 tracking-wide hidden sm:inline">Հիպերխորանարդի վիզուալիզատոր</span>
-        <div class="flex items-center gap-2 ml-auto md:ml-0">
-          <span class="text-[11px] text-slate-500">n =</span>
-          <input
-            type="number"
-            :min="N_MIN"
-            :max="N_MAX"
-            :value="appState.dimension"
-            @input="appState.setDimension(parseInt($event.target.value) || N_MIN)"
-            class="w-8 sm:w-10 bg-transparent text-sm font-bold text-blue-400 tabular-nums text-center border-b border-blue-500/30 focus:outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          />
-          <input
-            type="range"
-            :min="N_MIN"
-            :max="N_MAX"
-            :value="appState.dimension"
-            @input="appState.setDimension(parseInt($event.target.value))"
-            class="w-16 sm:w-20 cursor-pointer"
-          />
+        <div class="flex items-center gap-3 ml-auto md:ml-0">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] text-slate-500">Cube</span>
+            <input
+              type="number"
+              :min="N_MIN"
+              :max="N_MAX"
+              :value="appState.cubeDimension"
+              @input="appState.setCubeDimension(parseInt($event.target.value) || N_MIN)"
+              class="w-7 sm:w-8 bg-transparent text-xs font-bold text-blue-400 tabular-nums text-center border-b border-blue-500/30 focus:outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <input
+              type="range"
+              :min="N_MIN"
+              :max="N_MAX"
+              :value="appState.cubeDimension"
+              @input="appState.setCubeDimension(parseInt($event.target.value))"
+              class="w-12 sm:w-16 cursor-pointer"
+            />
+          </div>
+          <span class="text-slate-600 text-[10px]">|</span>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] text-slate-500">Analysis</span>
+            <input
+              type="number"
+              :min="N_MIN"
+              :max="N_MAX_ANALYSIS"
+              :value="appState.workspaceDimension"
+              @input="appState.setWorkspaceDimension(parseInt($event.target.value) || N_MIN)"
+              class="w-7 sm:w-8 bg-transparent text-xs font-bold text-emerald-400 tabular-nums text-center border-b border-emerald-500/30 focus:outline-none focus:border-emerald-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <input
+              type="range"
+              :min="N_MIN"
+              :max="N_MAX_ANALYSIS"
+              :value="appState.workspaceDimension"
+              @input="appState.setWorkspaceDimension(parseInt($event.target.value))"
+              class="w-12 sm:w-16 cursor-pointer"
+            />
+          </div>
         </div>
         <div v-if="appState.selectedBinaryString" class="hidden md:flex items-center gap-2 ml-2 text-[10px]">
           <span class="text-slate-600">|</span>

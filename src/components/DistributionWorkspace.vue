@@ -6,7 +6,7 @@ import KaTeXFormula from './KaTeXFormula.vue'
 const appState = inject('appState')
 
 const entries = computed(() => {
-  const n = appState.dimension
+  const n = appState.workspaceDimension
   const result = []
   for (let k = 1; k <= n; k++) {
     result.push({
@@ -21,7 +21,7 @@ const entries = computed(() => {
 })
 
 const computedTotal = computed(() => entries.value.reduce((s, e) => s + e.total, 0))
-const expectedTotal = computed(() => Math.pow(2, appState.dimension))
+const expectedTotal = computed(() => Math.pow(2, appState.workspaceDimension))
 const isValid = computed(() => computedTotal.value === expectedTotal.value)
 
 const maxTotal = computed(() => Math.max(...entries.value.map(e => e.total), 1))
@@ -32,7 +32,7 @@ const maxTotal = computed(() => Math.max(...entries.value.map(e => e.total), 1))
     <div>
       <h2 class="text-base font-semibold text-slate-200">Բաշխումն ըստ k-ի</h2>
       <p class="text-xs text-slate-500 mt-1">
-        Ինչպես են 2<sup>{{ appState.dimension }}</sup> գագաթները տրոհվում համարժեքության դասերի՝ ըստ հատվածների քանակի։
+        Ինչպես են 2<sup>{{ appState.workspaceDimension }}</sup> գագաթները տրոհվում համարժեքության դասերի՝ ըստ հատվածների քանակի։
       </p>
     </div>
 
@@ -85,7 +85,7 @@ const maxTotal = computed(() => Math.max(...entries.value.map(e => e.total), 1))
     <div class="bg-white/[0.03] rounded-xl p-4 space-y-3">
       <div class="text-center py-2">
         <KaTeXFormula
-          :formula="`\\sum_{k=1}^{${appState.dimension}} 2 \\cdot \\binom{${appState.dimension} - 1}{k - 1} = 2^{${appState.dimension}}`"
+          :formula="`\\sum_{k=1}^{${appState.workspaceDimension}} 2 \\cdot \\binom{${appState.workspaceDimension} - 1}{k - 1} = 2^{${appState.workspaceDimension}}`"
           :displayMode="true"
         />
       </div>
@@ -95,7 +95,7 @@ const maxTotal = computed(() => Math.max(...entries.value.map(e => e.total), 1))
         <span class="font-mono text-slate-300">{{ computedTotal.toLocaleString() }}</span>
       </div>
       <div class="flex items-center justify-between text-xs">
-        <span class="text-slate-500">Սպասվող քանակ (2<sup>{{ appState.dimension }}</sup>)</span>
+        <span class="text-slate-500">Սպասվող քանակ (2<sup>{{ appState.workspaceDimension }}</sup>)</span>
         <span class="font-mono text-slate-300">{{ expectedTotal.toLocaleString() }}</span>
       </div>
       <div class="flex items-center justify-between text-xs pt-1 border-t border-white/5">

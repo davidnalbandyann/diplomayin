@@ -11,13 +11,13 @@ const hc = useHypercube(canvasContainer)
 provide('hypercube', hc)
 
 onMounted(() => {
-  hc.setN(appState.dimension)
+  hc.setN(appState.cubeDimension)
   if (appState.selectedBinaryString) {
     hc.setSelectedBinaryString(appState.selectedBinaryString)
   }
 })
 
-watch(() => appState.dimension, (val) => {
+watch(() => appState.cubeDimension, (val) => {
   if (hc.n.value !== val) hc.setN(val)
 })
 
@@ -30,7 +30,7 @@ watch(() => appState.selectedBinaryString, (val) => {
 })
 
 watch(hc.n, (val) => {
-  if (val !== appState.dimension) appState.setDimension(val)
+  if (val !== appState.cubeDimension) appState.setCubeDimension(val)
 })
 
 watch(hc.selectedBinaryString, (val) => {

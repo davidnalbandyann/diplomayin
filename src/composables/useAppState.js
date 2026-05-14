@@ -1,9 +1,10 @@
 import { ref, computed, reactive } from 'vue'
 import { reduceRuns, getRunLengths, getRunCount, getCompressionStats } from '../utils/cubeMath.js'
-import { N_MIN, N_MAX } from '../config.js'
+import { N_MIN, N_MAX, N_MAX_ANALYSIS } from '../config.js'
 
 export function useAppState() {
-  const dimension = ref(3)
+  const cubeDimension = ref(3)
+  const workspaceDimension = ref(3)
   const activeTab = ref('classes')
   const selectedBinaryString = ref(null)
   const selectedReducedString = ref(null)
@@ -23,8 +24,12 @@ export function useAppState() {
     return getCompressionStats(selectedBinaryString.value.split('').map(Number))
   })
 
-  function setDimension(val) {
-    dimension.value = Math.max(N_MIN, Math.min(N_MAX, val))
+  function setCubeDimension(val) {
+    cubeDimension.value = Math.max(N_MIN, Math.min(N_MAX, val))
+  }
+
+  function setWorkspaceDimension(val) {
+    workspaceDimension.value = Math.max(N_MIN, Math.min(N_MAX_ANALYSIS, val))
   }
 
   function setActiveTab(val) {
@@ -48,14 +53,16 @@ export function useAppState() {
   }
 
   return reactive({
-    dimension,
+    cubeDimension,
+    workspaceDimension,
     activeTab,
     selectedBinaryString,
     selectedReducedString,
     selectedRunLengths,
     selectedRunCount,
     selectedCompressionStats,
-    setDimension,
+    setCubeDimension,
+    setWorkspaceDimension,
     setActiveTab,
     setSelectedBinaryString,
     setSelectedReducedString,

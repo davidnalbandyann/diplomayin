@@ -22,7 +22,7 @@ function sanitizeY(e) {
 const preimageData = computed(() => {
   const y = inputY.value
   if (!y) return null
-  return getPreimagesForReducedString(y, appState.dimension)
+  return getPreimagesForReducedString(y, appState.workspaceDimension)
 })
 
 const yValid = computed(() => {
@@ -61,7 +61,7 @@ function highlightPreimage(label) {
         </div>
       </div>
       <div class="text-xs text-slate-500">
-        n = <span class="font-mono text-slate-300">{{ appState.dimension }}</span>
+        n = <span class="font-mono text-slate-300">{{ appState.workspaceDimension }}</span>
       </div>
     </div>
 
@@ -74,7 +74,7 @@ function highlightPreimage(label) {
         <span class="font-mono text-slate-300">{{ preimageData.count }}</span>
         <span class="text-slate-500">փաստացի</span>
         <span class="text-slate-600">ընդդեմ</span>
-        <KaTeXFormula :formula="`C(${appState.dimension - 1}, ${preimageData.k - 1}) = ${preimageData.theoretical}`" />
+        <KaTeXFormula :formula="`C(${appState.workspaceDimension - 1}, ${preimageData.k - 1}) = ${preimageData.theoretical}`" />
         <span
           :class="[
             'text-xs font-mono px-1.5 py-0.5 rounded',
