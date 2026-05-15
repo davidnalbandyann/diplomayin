@@ -1,4 +1,4 @@
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 import { reduceRuns, getRunLengths, getRunCount, getCompressionStats } from '../utils/cubeMath.js'
 import { N_MIN, N_MAX, N_MAX_ANALYSIS } from '../config.js'
 
@@ -8,6 +8,7 @@ export function useAppState() {
   const activeTab = ref('classes')
   const selectedBinaryString = ref(null)
   const selectedReducedString = ref(null)
+  const theme = ref(getInitialTheme())
 
   const selectedRunLengths = computed(() => {
     if (!selectedBinaryString.value) return null
@@ -52,12 +53,40 @@ export function useAppState() {
     selectedReducedString.value = null
   }
 
+  function getInitialTheme() {
+    if (typeof window === 'undefined') return 'light'
+    const saved = window.localStorage.getItem('hypercube-theme')
+    return saved === 'dark' || saved === 'light' ? saved : 'light'
+  }
+
+  function applyTheme(val) {
+    if (typeof document === 'undefined') return
+    const next = val === 'dark' ? 'dark' : 'light'
+    document.documentElement.classList.toggle('theme-dark', next === 'dark')
+    document.documentElement.classList.toggle('theme-light', next === 'light')
+    document.body.classList.toggle('theme-dark', next === 'dark')
+    document.body.classList.toggle('theme-light', next === 'light')
+    document.documentElement.style.colorScheme = next
+    window.localStorage.setItem('hypercube-theme', next)
+  }
+
+  function setTheme(val) {
+    theme.value = val === 'dark' ? 'dark' : 'light'
+  }
+
+  function toggleTheme() {
+    setTheme(theme.value === 'light' ? 'dark' : 'light')
+  }
+
+  watch(theme, applyTheme, { immediate: true })
+
   return reactive({
     cubeDimension,
     workspaceDimension,
     activeTab,
     selectedBinaryString,
     selectedReducedString,
+    theme,
     selectedRunLengths,
     selectedRunCount,
     selectedCompressionStats,
@@ -67,5 +96,7 @@ export function useAppState() {
     setSelectedBinaryString,
     setSelectedReducedString,
     clearSelection,
+    setTheme,
+    toggleTheme,
   })
 }

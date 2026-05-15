@@ -10,6 +10,10 @@ const canvasContainer = ref(null)
 const hc = useHypercube(canvasContainer)
 provide('hypercube', hc)
 
+watch(() => appState.theme, (val) => {
+  hc.setTheme(val)
+}, { immediate: true })
+
 onMounted(() => {
   hc.setN(appState.cubeDimension)
   if (appState.selectedBinaryString) {

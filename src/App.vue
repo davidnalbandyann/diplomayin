@@ -49,7 +49,12 @@ const workspaceComponents = {
 </script>
 
 <template>
-  <div class="h-screen w-screen bg-slate-950 text-white overflow-hidden flex flex-col">
+  <div
+    :class="[
+      appState.theme === 'light' ? 'theme-light app-shell text-slate-900' : 'theme-dark dark-shell text-white',
+      'h-screen w-screen overflow-hidden flex flex-col',
+    ]"
+  >
     <header class="shrink-0 border-b border-white/5">
       <div class="h-9 flex items-center px-3 md:px-4 gap-3">
         <button
@@ -110,6 +115,34 @@ const workspaceComponents = {
           <span v-if="appState.selectedReducedString" class="text-slate-500">y:</span>
           <span v-if="appState.selectedReducedString" class="font-mono text-emerald-300">{{ appState.selectedReducedString }}</span>
         </div>
+        <button
+          type="button"
+          class="theme-toggle ml-1 md:ml-auto"
+          :aria-label="appState.theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'"
+          :title="appState.theme === 'light' ? 'Dark mode' : 'Light mode'"
+          @click="appState.toggleTheme()"
+        >
+          <svg
+            v-if="appState.theme === 'light'"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="w-3.5 h-3.5"
+            aria-hidden="true"
+          >
+            <path d="M7.455 2.004a.75.75 0 0 1 .26.77 7 7 0 0 0 8.51 8.51.75.75 0 0 1 .77.26.75.75 0 0 1 .028.813A8.5 8.5 0 1 1 7.643 1.977a.75.75 0 0 1-.188.027Z" />
+          </svg>
+          <svg
+            v-else
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="w-3.5 h-3.5"
+            aria-hidden="true"
+          >
+            <path d="M10 1.5a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 1.5ZM10 5.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9ZM18.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75ZM3.25 10.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 0 1.5ZM15.303 3.636a.75.75 0 0 1 1.061 1.061l-.707.707a.75.75 0 0 1-1.061-1.061l.707-.707ZM5.404 15.657l-.707.707a.75.75 0 0 1-1.061-1.061l.707-.707a.75.75 0 1 1 1.061 1.061ZM16.364 15.303a.75.75 0 0 1-1.061 1.061l-.707-.707a.75.75 0 0 1 1.061-1.061l.707.707ZM5.404 4.343a.75.75 0 0 1-1.061 1.061l-.707-.707a.75.75 0 1 1 1.061-1.061l.707.707Z" />
+          </svg>
+        </button>
       </div>
       <nav class="flex overflow-x-auto border-t border-white/5 bg-slate-900/50">
         <button

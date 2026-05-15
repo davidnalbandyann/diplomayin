@@ -3,7 +3,7 @@ import { inject } from 'vue'
 
 const hc = inject('hypercube')
 
-const GRADIENT_STOPS = ['#3b82f6', '#06b6d4', '#10b981', '#eab308', '#f97316', '#ef4444']
+const GRADIENT_STOPS = ['#2563eb', '#0891b2', '#059669', '#d97706', '#ea580c', '#db2777']
 const gradientCss = `linear-gradient(to right, ${GRADIENT_STOPS.join(', ')})`
 </script>
 

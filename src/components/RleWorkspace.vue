@@ -152,7 +152,7 @@ const savedPct = computed(() => {
               class="h-full rounded-full transition-all duration-500"
               :style="{
                 width: compressionPct + '%',
-                background: compressionPct > 70 ? '#ef4444' : compressionPct > 50 ? '#f97316' : '#10b981',
+                background: compressionPct > 70 ? '#db2777' : compressionPct > 50 ? '#ea580c' : '#059669',
               }"
             ></div>
           </div>

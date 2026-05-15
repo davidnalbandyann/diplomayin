@@ -213,12 +213,12 @@ export function runValidation() {
 }
 
 const COLOR_STOPS = [
-  { pos: 0, hex: '#3b82f6' },
-  { pos: 0.2, hex: '#06b6d4' },
-  { pos: 0.4, hex: '#10b981' },
-  { pos: 0.6, hex: '#eab308' },
-  { pos: 0.8, hex: '#f97316' },
-  { pos: 1, hex: '#ef4444' },
+  { pos: 0, hex: '#2563eb' },
+  { pos: 0.2, hex: '#0891b2' },
+  { pos: 0.4, hex: '#059669' },
+  { pos: 0.6, hex: '#d97706' },
+  { pos: 0.8, hex: '#ea580c' },
+  { pos: 1, hex: '#db2777' },
 ]
 
 function hexToRgb(hex) {
@@ -322,7 +322,7 @@ export function buildCollisionFrequencyMap(maxN) {
 }
 
 export function colorForK(k, n) {
-  if (n === 1) return '#3b82f6'
+  if (n === 1) return '#2563eb'
   const t = (k - 1) / (n - 1)
   let lower = COLOR_STOPS[0]
   let upper = COLOR_STOPS[COLOR_STOPS.length - 1]

@@ -9,6 +9,57 @@ import { N_MIN, N_MAX } from '../config.js'
 import { generateVertices, generateEdges, groupByK, runCount, colorForK, generateGrayCode, reduceRuns } from '../utils/cubeMath.js'
 import { forceDirectedLayout, directLayout, shellLayout } from '../utils/layout.js'
 
+const SCENE_THEMES = {
+  light: {
+    background: 0xedf7ff,
+    exposure: 0.96,
+    ambientColor: 0xffffff,
+    ambientIntensity: 0.78,
+    dirColor: 0xffffff,
+    dirIntensity: 0.86,
+    dimColor: 0xb7ead7,
+    dimIntensity: 0.28,
+    vertexEmissive: 0.12,
+    inactiveVertex: 0xd7e5f4,
+    defaultEdge: 0x9aabc0,
+    activeEdge: 0x64748b,
+    inactiveEdge: 0xd6e1ed,
+    edgeOpacity: 0.48,
+    inactiveEdgeOpacity: 0.035,
+    pathColor: 0xf59e0b,
+    pathAnimatorColor: 0xf97316,
+    pathOpacity: 0.66,
+    labelColor: '#334155',
+    labelBackground: 'rgba(255, 255, 255, 0.92)',
+    labelBorder: '1px solid rgba(100, 116, 139, 0.18)',
+    labelShadow: '0 4px 12px rgba(71, 85, 105, 0.12)',
+  },
+  dark: {
+    background: 0x0f172a,
+    exposure: 1.0,
+    ambientColor: 0x334466,
+    ambientIntensity: 0.6,
+    dirColor: 0xffffff,
+    dirIntensity: 0.9,
+    dimColor: 0x6688cc,
+    dimIntensity: 0.3,
+    vertexEmissive: 0.0,
+    inactiveVertex: 0x334155,
+    defaultEdge: 0x64748b,
+    activeEdge: 0x94a3b8,
+    inactiveEdge: 0x1e293b,
+    edgeOpacity: 0.35,
+    inactiveEdgeOpacity: 0.005,
+    pathColor: 0xfbbf24,
+    pathAnimatorColor: 0xfbbf24,
+    pathOpacity: 0.6,
+    labelColor: '#94a3b8',
+    labelBackground: 'rgba(15, 23, 42, 0.7)',
+    labelBorder: 'none',
+    labelShadow: 'none',
+  },
+}
+
 export function useHypercube(canvasRef) {
   const n = ref(1)
   const selectedK = ref(null)
@@ -18,8 +69,10 @@ export function useHypercube(canvasRef) {
   const layoutMode = ref('standard')
   const showPath = ref(false)
   const hoveredVertex = ref(null)
+  const sceneTheme = ref('light')
 
   let scene, camera, renderer, composer, controls, labelRenderer
+  let ambientLight, dirLight, dimLight
   let vertices = []
   let edges = []
   let vertexMeshes = []
@@ -35,15 +88,60 @@ export function useHypercube(canvasRef) {
   let targetCamPos = null
   let targetCamLook = null
 
+  function activeSceneTheme() {
+    return SCENE_THEMES[sceneTheme.value] || SCENE_THEMES.light
+  }
+
+  function applyLabelTheme(label) {
+    const colors = activeSceneTheme()
+    label.element.style.color = colors.labelColor
+    label.element.style.background = colors.labelBackground
+    label.element.style.border = colors.labelBorder
+    label.element.style.boxShadow = colors.labelShadow
+  }
+
+  function applySceneTheme() {
+    const colors = activeSceneTheme()
+    if (!scene) return
+
+    scene.background = new THREE.Color(colors.background)
+    if (renderer) renderer.toneMappingExposure = colors.exposure
+    if (ambientLight) {
+      ambientLight.color.setHex(colors.ambientColor)
+      ambientLight.intensity = colors.ambientIntensity
+    }
+    if (dirLight) {
+      dirLight.color.setHex(colors.dirColor)
+      dirLight.intensity = colors.dirIntensity
+    }
+    if (dimLight) {
+      dimLight.color.setHex(colors.dimColor)
+      dimLight.intensity = colors.dimIntensity
+    }
+    if (pathMesh) {
+      pathMesh.material.color.setHex(colors.pathColor)
+      pathMesh.material.opacity = colors.pathOpacity
+    }
+    if (pathAnimator) {
+      pathAnimator.material.color.setHex(colors.pathAnimatorColor)
+    }
+    for (const label of labelElements) {
+      applyLabelTheme(label)
+    }
+    if (selectedK.value === null) clearHighlight()
+    else updateHighlight(selectedK.value)
+  }
+
   function initScene() {
     const canvas = canvasRef.value
     if (!canvas) return
+    const colors = activeSceneTheme()
 
     const w = canvas.clientWidth
     const h = canvas.clientHeight
 
     scene = new THREE.Scene()
-    scene.background = new THREE.Color(0x0f172a)
+    scene.background = new THREE.Color(colors.background)
 
     camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 100)
     camera.position.set(4, 3, 6)
@@ -52,7 +150,7 @@ export function useHypercube(canvasRef) {
     renderer.setSize(w, h)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.toneMapping = THREE.ReinhardToneMapping
-    renderer.toneMappingExposure = 1.0
+    renderer.toneMappingExposure = colors.exposure
     canvas.appendChild(renderer.domElement)
 
     labelRenderer = new CSS2DRenderer()
@@ -75,17 +173,17 @@ export function useHypercube(canvasRef) {
     const renderPass = new RenderPass(scene, camera)
     composer.addPass(renderPass)
 
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(w, h), 0.15, 0.3, 0.05)
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(w, h), 0.05, 0.2, 0.1)
     composer.addPass(bloomPass)
 
-    const ambientLight = new THREE.AmbientLight(0x334466, 0.6)
+    ambientLight = new THREE.AmbientLight(colors.ambientColor, colors.ambientIntensity)
     scene.add(ambientLight)
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9)
+    dirLight = new THREE.DirectionalLight(colors.dirColor, colors.dirIntensity)
     dirLight.position.set(5, 10, 7)
     scene.add(dirLight)
 
-    const dimLight = new THREE.DirectionalLight(0x6688cc, 0.3)
+    dimLight = new THREE.DirectionalLight(colors.dimColor, colors.dimIntensity)
     dimLight.position.set(-5, -3, -5)
     scene.add(dimLight)
 
@@ -151,24 +249,25 @@ export function useHypercube(canvasRef) {
   }
 
   function updateHighlight(k) {
+    const colors = activeSceneTheme()
     for (const vm of vertexMeshes) {
       const on = vm.k === k
       vm.targetScale = on ? 1.8 : 0.4
       vm.targetOpacity = on ? 1.0 : 0.08
       vm.mesh.material.emissiveIntensity = on ? 0.8 : 0.0
       if (!on) {
-        vm.mesh.material.color.setHex(0x334155)
+        vm.mesh.material.color.setHex(colors.inactiveVertex)
       } else {
         vm.mesh.material.color.copy(vm.origColor)
       }
     }
     for (const em of edgeMeshes) {
       const on = em.k1 === k || em.k2 === k
-      em.targetOpacity = on ? 0.9 : 0.005
+      em.targetOpacity = on ? 0.95 : colors.inactiveEdgeOpacity
       if (!on) {
-        em.mesh.material.color.setHex(0x1e293b)
+        em.mesh.material.color.setHex(colors.inactiveEdge)
       } else {
-        em.mesh.material.color.setHex(0x94a3b8)
+        em.mesh.material.color.setHex(colors.activeEdge)
       }
     }
     for (const l of labelElements) {
@@ -177,15 +276,16 @@ export function useHypercube(canvasRef) {
   }
 
   function clearHighlight() {
+    const colors = activeSceneTheme()
     for (const vm of vertexMeshes) {
       vm.targetScale = 1.0
       vm.targetOpacity = 1.0
-      vm.mesh.material.emissiveIntensity = 0.0
+      vm.mesh.material.emissiveIntensity = colors.vertexEmissive
       vm.mesh.material.color.copy(vm.origColor)
     }
     for (const em of edgeMeshes) {
-      em.targetOpacity = 0.35
-      em.mesh.material.color.setHex(0x64748b)
+      em.targetOpacity = colors.edgeOpacity
+      em.mesh.material.color.setHex(colors.defaultEdge)
     }
     for (const l of labelElements) {
       l.element.style.opacity = '1'
@@ -237,15 +337,16 @@ export function useHypercube(canvasRef) {
     const ids = generateGrayCode(n.value)
     const pos = getCurrentPositions()
     const points = ids.map(id => new THREE.Vector3(pos[id * 3], pos[id * 3 + 1], pos[id * 3 + 2]))
+    const colors = activeSceneTheme()
 
     const curve = new THREE.CatmullRomCurve3(points)
     const tubeGeom = new THREE.TubeGeometry(curve, points.length * 4, 0.015, 4, false)
-    const tubeMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.6 })
+    const tubeMat = new THREE.MeshBasicMaterial({ color: colors.pathColor, transparent: true, opacity: colors.pathOpacity })
     pathMesh = new THREE.Mesh(tubeGeom, tubeMat)
     scene.add(pathMesh)
 
     const animGeom = new THREE.SphereGeometry(0.08, 12, 12)
-    const animMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 })
+    const animMat = new THREE.MeshBasicMaterial({ color: colors.pathAnimatorColor })
     pathAnimator = new THREE.Mesh(animGeom, animMat)
     scene.add(pathAnimator)
   }
@@ -285,6 +386,7 @@ export function useHypercube(canvasRef) {
     }
 
     const pos = layoutState.positions
+    const colors = activeSceneTheme()
 
     for (let i = 0; i < vertices.length; i++) {
       const v = vertices[i]
@@ -295,13 +397,13 @@ export function useHypercube(canvasRef) {
       const mat = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 0.0,
-        metalness: 0.15,
-        roughness: 0.5,
+        emissiveIntensity: colors.vertexEmissive,
+        metalness: 0.0,
+        roughness: 0.46,
         transparent: true,
         opacity: 0,
       })
-      const geom = new THREE.SphereGeometry(0.2, 20, 20)
+      const geom = new THREE.SphereGeometry(0.23, 20, 20)
       const mesh = new THREE.Mesh(geom, mat)
       mesh.position.set(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2])
       scene.add(mesh)
@@ -310,17 +412,16 @@ export function useHypercube(canvasRef) {
 
       const div = document.createElement('div')
       div.textContent = v.label
-      div.style.color = '#94a3b8'
       div.style.fontFamily = '"JetBrains Mono", monospace'
       div.style.fontSize = '10px'
       div.style.fontWeight = '500'
-      div.style.background = 'rgba(15, 23, 42, 0.7)'
       div.style.padding = '1px 5px'
       div.style.borderRadius = '3px'
       div.style.pointerEvents = 'none'
       div.style.userSelect = 'none'
       div.style.transition = 'opacity 0.2s'
       const label = new CSS2DObject(div)
+      applyLabelTheme(label)
       label.position.set(pos[i * 3], pos[i * 3 + 1] + 0.35, pos[i * 3 + 2])
       label.__k = k
       scene.add(label)
@@ -349,14 +450,14 @@ export function useHypercube(canvasRef) {
       const curve = new THREE.CubicBezierCurve3(p1, cp1, cp2, p2)
       const tubeGeom = new THREE.TubeGeometry(curve, 8, 0.02, 6, false)
       const tubeMat = new THREE.MeshBasicMaterial({
-        color: 0x64748b,
+        color: colors.defaultEdge,
         transparent: true,
         opacity: 0,
       })
       const tube = new THREE.Mesh(tubeGeom, tubeMat)
       scene.add(tube)
 
-      edgeMeshes.push({ mesh: tube, k1: runCount(vertices[a].bits), k2: runCount(vertices[b].bits), aIdx: a, bIdx: b, targetOpacity: 0.35 })
+      edgeMeshes.push({ mesh: tube, k1: runCount(vertices[a].bits), k2: runCount(vertices[b].bits), aIdx: a, bIdx: b, targetOpacity: colors.edgeOpacity })
     }
 
     buildPathOverlay()
@@ -441,8 +542,9 @@ export function useHypercube(canvasRef) {
       function step(time) {
         const t = Math.min((time - start) / dur, 1)
         const o = 1 - t
+        const colors = activeSceneTheme()
         for (const vm of vertexMeshes) vm.mesh.material.opacity = o
-        for (const em of edgeMeshes) em.mesh.material.opacity = o * 0.35
+        for (const em of edgeMeshes) em.mesh.material.opacity = o * colors.edgeOpacity
         if (t < 1) requestAnimationFrame(step)
         else resolve()
       }
@@ -459,9 +561,10 @@ export function useHypercube(canvasRef) {
         vm.mesh.material.opacity = t
         vm.targetOpacity = t
       }
+      const colors = activeSceneTheme()
       for (const em of edgeMeshes) {
-        em.mesh.material.opacity = t * 0.35
-        em.targetOpacity = t * 0.35
+        em.mesh.material.opacity = t * colors.edgeOpacity
+        em.targetOpacity = t * colors.edgeOpacity
       }
       for (const l of labelElements) l.element.style.opacity = String(t)
       if (t < 1) requestAnimationFrame(step)
@@ -539,6 +642,10 @@ export function useHypercube(canvasRef) {
     }
   })
 
+  function setTheme(mode) {
+    sceneTheme.value = mode === 'dark' ? 'dark' : 'light'
+    applySceneTheme()
+  }
   function setN(val) { n.value = Math.max(N_MIN, Math.min(N_MAX, val)) }
   function setSelectedK(val) { selectedK.value = val }
   function setSelectedBinaryString(val) {
@@ -578,5 +685,5 @@ export function useHypercube(canvasRef) {
     }
   })
 
-  return { n, selectedK, selectedBinaryString, groups, isTransitioning, layoutMode, showPath, hoveredVertex, setN, setSelectedK, setSelectedBinaryString, clearSelection, toggleAutoRotate, setLayoutMode, togglePath, autoRotate, vertices }
+  return { n, selectedK, selectedBinaryString, groups, isTransitioning, layoutMode, showPath, hoveredVertex, sceneTheme, setTheme, setN, setSelectedK, setSelectedBinaryString, clearSelection, toggleAutoRotate, setLayoutMode, togglePath, autoRotate, vertices }
 }
