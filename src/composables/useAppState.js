@@ -5,7 +5,7 @@ import { N_MIN, N_MAX, N_MAX_ANALYSIS } from '../config.js'
 export function useAppState() {
   const cubeDimension = ref(3)
   const workspaceDimension = ref(3)
-  const activeTab = ref('classes')
+  const activeTab = ref('thesis')
   const selectedBinaryString = ref(null)
   const selectedReducedString = ref(null)
   const theme = ref(getInitialTheme())

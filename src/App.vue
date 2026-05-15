@@ -1,5 +1,5 @@
 <script setup>
-import { ref, provide } from 'vue'
+import { ref, provide, defineAsyncComponent } from 'vue'
 import { N_MIN, N_MAX, N_MAX_ANALYSIS } from './config.js'
 import { useAppState } from './composables/useAppState.js'
 import ClassesWorkspace from './components/ClassesWorkspace.vue'
@@ -9,10 +9,11 @@ import StarsBarsWorkspace from './components/StarsBarsWorkspace.vue'
 import DistributionWorkspace from './components/DistributionWorkspace.vue'
 import SimulationWorkspace from './components/SimulationWorkspace.vue'
 import ProofsWorkspace from './components/ProofsWorkspace.vue'
-import ThesisWorkspace from './components/ThesisWorkspace.vue'
 import BinomialIsomorphismWorkspace from './components/BinomialIsomorphismWorkspace.vue'
 import BinomialCollisionsWorkspace from './components/BinomialCollisionsWorkspace.vue'
 import LyndFamilySection from './components/LyndFamilySection.vue'
+
+const ThesisWorkspace = defineAsyncComponent(() => import('./components/ThesisWorkspace.vue'))
 
 const appState = useAppState()
 provide('appState', appState)
