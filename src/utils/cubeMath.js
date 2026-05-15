@@ -255,6 +255,19 @@ export function isAdjacentCollision(n, k) {
   return equal
 }
 
+export function fibonacciBigInt(n) {
+  if (n < 0) return 0n
+  if (n === 0) return 0n
+  if (n === 1) return 1n
+  let a = 0n, b = 1n
+  for (let i = 2; i <= n; i++) {
+    const c = a + b
+    a = b
+    b = c
+  }
+  return b
+}
+
 export function getLyndExamples() {
   return [
     { n: 15, k: 5, label: 'Lynd 1' },
