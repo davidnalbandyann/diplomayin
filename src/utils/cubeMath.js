@@ -288,8 +288,8 @@ export function formatBigInt(val) {
 
 export function findCollisions(maxN) {
   const map = new Map()
-  for (let n = 1; n <= maxN; n++) {
-    for (let k = 1; k <= Math.floor(n / 2); k++) {
+  for (let n = 2; n <= maxN; n++) {
+    for (let k = 2; k <= Math.floor(n / 2); k++) {
       const val = binomial(n, k)
       if (!map.has(val)) map.set(val, [])
       map.get(val).push({ n, k })

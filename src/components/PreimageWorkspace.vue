@@ -38,7 +38,7 @@ function highlightPreimage(label) {
 <template>
   <div class="h-full overflow-y-auto px-4 py-4 md:px-8 md:py-6 max-w-3xl mx-auto space-y-6">
     <div>
-      <h2 class="text-base font-semibold text-slate-200">Նախապատկերների հետազոտիչ</h2>
+      <h2 class="text-base font-semibold text-slate-200">Նախապատկերների հետազոտում</h2>
       <p class="text-xs text-slate-500 mt-1">
          Տրված է կրճատված y տողը և n չափողականությունը, գտնել բոլոր այն x-երը, որոնց համար g(x) = y:
       </p>
